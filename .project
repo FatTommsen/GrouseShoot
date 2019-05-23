@@ -3,6 +3,7 @@
 	<name>GrouseShoot</name>
 	<comment></comment>
 	<projects>
+		<project>YAHAL</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
