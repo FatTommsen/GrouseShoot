@@ -16,6 +16,7 @@
 #include "map.h"
 #include "crosshair.h"
 
+extern const size_t view_size = 128;
 
 class Display : public task{
 
@@ -48,10 +49,10 @@ public:
         _gui = new uGUI_2layer(*_lcd);
 
         _bmp = new uGUI_2layer::BMP_2layer();
-        _bmp->_screen_size = 128;
+        _bmp->_screen_size = view_size;
         _bmp->bpp = 16;
         _bmp->colors = BMP_RGB565;
-        _bmp->_layer_callback = callback;
+        _bmp->_layer_callback = mapItemCoverCallback;
     }
 
     ~Display(){

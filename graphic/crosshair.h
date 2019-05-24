@@ -9,9 +9,10 @@
 #define GRAPHIC_CROSSHAIR_H_
 
 #include "util.h"
-#include "task.h"
+#include "interfacemapitem.h"
 #include "../sensor/joystick.h"
 
+extern const size_t view_size;
 extern const uint16_t color_crosshair_full;
 extern const uint16_t color_crosshair_trans;
 extern const uint16_t image_crosshiar[256];
@@ -21,19 +22,15 @@ const size_t crosshair_lUp_y = 40;
 const size_t crosshair_scroll_per_tick = 5;
 
 
-class Crosshair : public task{
+class Crosshair : public InterfaceMapItem{
 
 private:
     Corners* _corn;
-    size_t _view_size;
     Joystick* _joy;
-    Synchronizer& _sync;
-    bool _taskMode;
 
 public:
 
-    Crosshair( size_t view_size, Synchronizer& sync, bool taskMode = true )
-    : task("crosshair task"), _view_size(view_size), _sync(sync), _taskMode(taskMode)
+    Crosshair( )
     {
         _corn = new Corners();
         _corn->lUp.x = crosshair_lUp_x;
@@ -51,35 +48,27 @@ public:
         delete _joy;
     }
 
-    void run() override{
-        do{
-            _joy->measure();
-            int x = _joy->getAndResetX();
-            int y = _joy->getAndResetY();
+    void update_position() override{
+        _joy->measure();
+        int x = _joy->getAndResetX();
+        int y = _joy->getAndResetY();
 
-            if(_taskMode)
-                _sync._mutex_crosshair->lock();
+        moveCrosshairH( y * crosshair_scroll_per_tick);
+        moveCrosshairV( x * crosshair_scroll_per_tick);
 
-            moveCrosshairH( y * crosshair_scroll_per_tick);
-            moveCrosshairV( x * crosshair_scroll_per_tick);
-
-            if(_taskMode){
-                _sync._mutex_crosshair->unlock();
-                yield();
-            }
-
-        }while(_taskMode);
     }
 
-    bool override_cb( size_t x, size_t y ){
+    bool cover_callback( size_t x, size_t y, uint16_t* color ) override{
         if( x >= _corn->lUp.x && x <= _corn->rLow.x && y >= _corn->lUp.y && y <= _corn->rLow.y ){
             size_t rel_x = x - _corn->lUp.x;
             size_t rel_y = y - _corn->lUp.y;
 
             if( image_crosshiar[ rel_y * 16 + rel_x] == color_crosshair_full ){
+                *color = color_crosshair_full;
                 return true;
             }
         }
+
         return false;
     }
 
@@ -102,12 +91,12 @@ private:
             }
         }
         else{
-            if( _corn->rLow.y >= _view_size - 1 ){
+            if( _corn->rLow.y >= view_size - 1 ){
                 //already in button row
                 return;
             }
             else{
-                int move = _view_size - _corn->rLow.y < (size_t)rows ? _view_size - _corn->rLow.y : rows;
+                int move = view_size - _corn->rLow.y < (size_t)rows ? view_size - _corn->rLow.y : rows;
                 _corn->lUp.y += move;
                 _corn->rLow.y += move;
             }
@@ -131,12 +120,12 @@ private:
             }
         }
         else{
-            if( _corn->rLow.x >= _view_size - 1 ){
+            if( _corn->rLow.x >= view_size - 1 ){
                 //already in very right col
                 return;
             }
             else{
-                int move = _view_size - _corn->rLow.x < (size_t)cols ? _view_size - _corn->rLow.x : cols;
+                int move = view_size - _corn->rLow.x < (size_t)cols ? view_size - _corn->rLow.x : cols;
                 _corn->lUp.x += move;
                 _corn->rLow.x += move;
             }
@@ -144,12 +133,6 @@ private:
     }
 
 };
-
-//Hack für Callback
-Crosshair* theCrosshair;
-bool callback(size_t x, size_t y){
-    return theCrosshair->override_cb(x, y);
-}
 
 
 #endif /* GRAPHIC_CROSSHAIR_H_ */

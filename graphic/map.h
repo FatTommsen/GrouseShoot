@@ -10,12 +10,14 @@
 
 #include "util.h"
 #include "task.h"
+#include "mapitemmanager.h"
 #include "../sensor/gsensor.h"
 
 const size_t map_lUp_x_start = 128;
 const size_t map_lUp_y_start = 44;
 const size_t map_scroll_per_tick = 5;
 
+extern const size_t view_size;
 extern const unsigned int map_size_x;
 extern const unsigned int map_size_y;
 extern uint16_t image_map[82944];
@@ -24,7 +26,6 @@ class Map : public task{
 
 private:
 
-    const size_t _view_size;
     Corners* _corn;
     uint16_t **_view;
     Synchronizer& _sync;
@@ -33,21 +34,23 @@ private:
 
 public:
 
-    Map( size_t view_size, Synchronizer& sync, bool taskMode = true )
-    : task("map task"), _view_size(view_size), _sync(sync), _taskMode(taskMode) {
+    Map( Synchronizer& sync, bool taskMode = true )
+    : task("map task"), _sync(sync), _taskMode(taskMode) {
 
-        _view = new uint16_t*[_view_size];
+        _view = new uint16_t*[view_size];
         _corn = new Corners;
 
         _corn->lUp.x = map_lUp_x_start;
         _corn->lUp.y = map_lUp_y_start;
 
-        _corn->rLow.x = _corn->lUp.x + _view_size;
-        _corn->rLow.y = _corn->lUp.y + _view_size;
+        _corn->rLow.x = _corn->lUp.x + view_size;
+        _corn->rLow.y = _corn->lUp.y + view_size;
 
         updateView();
 
         _gSen = new GSensor();
+
+        MapItemManager::getInstance().registerMapViewOffset( &(_corn->lUp) );
     }
 
     ~Map(){
@@ -88,7 +91,7 @@ private:
     void updateView(){
         size_t lUp_y_absolute = _corn->lUp.y * map_size_x + _corn->lUp.x;
         _view[0] = &image_map[lUp_y_absolute];
-        for( size_t i = 1; i < _view_size; ++i ){
+        for( size_t i = 1; i < view_size; ++i ){
             _view[i] = _view[0] + i * map_size_x;
         }
     }

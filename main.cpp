@@ -35,15 +35,16 @@ int main(void)
 */
 
     Synchronizer sync;
-    Map task_map(128, sync, false);
+    Map task_map( sync, false);
     Display task_display(task_map, sync, false);
-    Crosshair task_crosshair(128, sync, false);
+    MapItemManager& task_manager = MapItemManager::getInstance();
+    task_manager.turnOffTaskMode();
 
-    theCrosshair = &task_crosshair;
+
 
     while(true){
         task_map.run();
-        task_crosshair.run();
+        task_manager.run();
         task_display.run();
     }
 

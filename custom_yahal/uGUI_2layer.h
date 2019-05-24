@@ -15,7 +15,6 @@ class uGUI_2layer : public uGUI{
 
 private:
     lcd_interface & _lcd;
-    bool(*_layer_callback)( size_t, size_t);
 
 public:
     uGUI_2layer(lcd_interface & lcd )
@@ -27,7 +26,7 @@ public:
     struct BMP_2layer
     {
         const void** p;
-        bool(*_layer_callback)( size_t, size_t);
+        bool(*_layer_callback)( size_t, size_t, uint16_t* color);
         uint16_t _screen_size;
         uint8_t bpp;
         uint8_t colors;

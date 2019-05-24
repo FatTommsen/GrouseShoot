@@ -2,8 +2,6 @@
 #include "pixel_stream_rgb565.h"
 #include <cstdlib>
 
-const uint16_t color_foreground_layer = 0xe8e4;
-
 class pixel_stream_2layer : public pixel_stream_rgb565{
 
 private:
@@ -11,7 +9,7 @@ private:
     const uint16_t ** _data;
     size_t            _screen_size;
     size_t            _index;
-    bool(*_layer_callback)( size_t, size_t);
+    bool(*_layer_callback)( size_t, size_t, uint16_t* color);
 
 public:
 
@@ -31,14 +29,15 @@ public:
         ++_index;
 
         // determine whether pixel is overwritten with top layer
-        if( _layer_callback != nullptr && _layer_callback(x, y) ){
-            return color_foreground_layer | LCD::COLORTYPE_RGB565;
+        uint16_t* color_cover = nullptr;
+        if( _layer_callback != nullptr && _layer_callback(x, y, color_cover) ){
+            return *color_cover | LCD::COLORTYPE_RGB565;
         }
 
         return _data[x][y] | LCD::COLORTYPE_RGB565;
     }
 
-    void setLayerCallback( bool(*layer_callback)( size_t, size_t) ){
+    void setLayerCallback( bool(*layer_callback)( size_t, size_t, uint16_t* color) ){
         _layer_callback = layer_callback;
     }
 
