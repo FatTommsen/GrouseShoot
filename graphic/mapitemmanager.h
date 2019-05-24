@@ -58,7 +58,7 @@ public:
     }
 
     void registerSynchronizer( Synchronizer* sync ){
-        sync = sync;
+        _sync = sync;
     }
 
     bool coverCallback( size_t x, size_t y, uint16_t* color ){
