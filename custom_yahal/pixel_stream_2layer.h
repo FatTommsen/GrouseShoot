@@ -9,7 +9,7 @@ private:
     const uint16_t ** _data;
     size_t            _screen_size;
     size_t            _index;
-    bool(*_layer_callback)( size_t, size_t, uint16_t* color);
+    bool(*_layer_callback)( size_t, size_t, uint16_t& color);
 
 public:
 
@@ -29,15 +29,15 @@ public:
         ++_index;
 
         // determine whether pixel is overwritten with top layer
-        uint16_t* color_cover = nullptr;
+        uint16_t color_cover;
         if( _layer_callback != nullptr && _layer_callback(x, y, color_cover) ){
-            return *color_cover | LCD::COLORTYPE_RGB565;
+            return color_cover | LCD::COLORTYPE_RGB565;
         }
 
         return _data[x][y] | LCD::COLORTYPE_RGB565;
     }
 
-    void setLayerCallback( bool(*layer_callback)( size_t, size_t, uint16_t* color) ){
+    void setLayerCallback( bool(*layer_callback)( size_t, size_t, uint16_t& color) ){
         _layer_callback = layer_callback;
     }
 

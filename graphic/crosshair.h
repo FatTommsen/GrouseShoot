@@ -58,13 +58,13 @@ public:
 
     }
 
-    bool cover_callback( size_t x, size_t y, uint16_t* color ) override{
+    bool cover_callback( size_t x, size_t y, uint16_t& color ) override{
         if( x >= _corn->lUp.x && x <= _corn->rLow.x && y >= _corn->lUp.y && y <= _corn->rLow.y ){
             size_t rel_x = x - _corn->lUp.x;
             size_t rel_y = y - _corn->lUp.y;
 
             if( image_crosshiar[ rel_y * 16 + rel_x] == color_crosshair_full ){
-                *color = color_crosshair_full;
+                color = color_crosshair_full;
                 return true;
             }
         }
