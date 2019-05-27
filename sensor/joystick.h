@@ -27,10 +27,10 @@ public:
     Joystick()
     : _moveX(0), _moveY(0)
     {
-        _joyX = new adc14_msp432_channel(9);
+        _joyX = new adc14_msp432_channel(15);
         _joyX->adcMode(ADC::ADC_10_BIT);
 
-        _joyY = new adc14_msp432_channel(15);
+        _joyY = new adc14_msp432_channel(9);
         _joyY->adcMode(ADC::ADC_10_BIT);
 
         _offset = _joyX->adcReadRaw();
@@ -46,20 +46,20 @@ public:
         int y = _joyY->adcReadRaw() - _offset;
 
         if( x < joystick_trigger * (-1)){
-            _moveX = 1;
+            _moveX = -1;
         }
         else if( x > joystick_trigger ){
-            _moveX = -1;
+            _moveX = 1;
         }
         else{
             _moveX = 0;
         }
 
         if( y < joystick_trigger * (-1) ){
-            _moveY = -1;
+            _moveY = 1;
         }
         else if( y > joystick_trigger ){
-            _moveY = 1;
+            _moveY = -1;
         }
         else{
             _moveY = 0;

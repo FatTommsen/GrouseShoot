@@ -24,8 +24,8 @@ public:
 
     inline color_t getNext() override {
         // calculate next pixel in 2d array
-        size_t x = (_index) / _screen_size;
-        size_t y = (_index) % _screen_size;
+        size_t y = (_index) / _screen_size;
+        size_t x = (_index) % _screen_size;
         ++_index;
 
         // determine whether pixel is overwritten with top layer
@@ -34,7 +34,8 @@ public:
             return color_cover | LCD::COLORTYPE_RGB565;
         }
 
-        return _data[x][y] | LCD::COLORTYPE_RGB565;
+        // writes columns from top to down
+        return _data[y][x] | LCD::COLORTYPE_RGB565;
     }
 
     void setLayerCallback( bool(*layer_callback)( size_t, size_t, uint16_t& color) ){

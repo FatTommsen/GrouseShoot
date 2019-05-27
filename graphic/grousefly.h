@@ -45,7 +45,7 @@ public:
         delete _corn;
     }
 
-    virtual void update_position(){
+    virtual void update_position() override{
 
         if( _actImg == &image_grouse_fly_up[0]){
             _actImg = &image_grouse_fly_mid[0];
@@ -58,9 +58,9 @@ public:
         }
     }
 
-    virtual bool cover_callback( size_t x, size_t y, uint16_t& color ){
+    virtual bool cover_callback( size_t x, size_t y, uint16_t& color ) override{
 
-        if( x >= _corn->lUp.x && x <= _corn->rLow.x && y >= _corn->lUp.y && y <= _corn->rLow.y ){
+        if( x >= _corn->lUp.x && x < _corn->rLow.x && y >= _corn->lUp.y && y < _corn->rLow.y ){
             //size_t rel_x = x - _corn->lUp.x;
             //size_t rel_y = y - _corn->lUp.y;
             size_t index = (y-_corn->lUp.y) * grouse_fly_x + (x-_corn->lUp.x);
