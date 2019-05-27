@@ -43,7 +43,7 @@ public:
 
     }
 
-    ~Crosshair(){
+    virtual ~Crosshair(){
         delete _corn;
         delete _joy;
     }

@@ -21,41 +21,53 @@ extern uint16_t image_grouse_fly_low[240];
 
 class GrouseFly : public InterfaceMapItem{
 
-private:
+protected:
 
-    const uint16_t* _actImg;
+    size_t _actImg;
+    int _imgCounter;
+    const uint16_t* _imgOrder[4];
     Corners* _corn;
+    Path * _path;
 
 public:
 
     GrouseFly( uint16_t start_x, uint16_t start_y )
-    : _actImg(&image_grouse_fly_up[0])
+    : _actImg(0), _imgCounter(0)
     {
-        _corn = new Corners();
+        _imgOrder[0] = &image_grouse_fly_up[0];
+        _imgOrder[1] = &image_grouse_fly_mid[0];
+        _imgOrder[2] = &image_grouse_fly_low[0];
+        _imgOrder[3] = &image_grouse_fly_mid[0];
+        _corn = new Corners;
         _corn->lUp.x = start_x;
         _corn->lUp.y = start_y;
 
         _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
         _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
 
-
+        _path = new Path;
     }
 
-    ~GrouseFly(){
+    virtual ~GrouseFly(){
         delete _corn;
+        delete _path;
     }
 
     virtual void update_position() override{
 
-        if( _actImg == &image_grouse_fly_up[0]){
-            _actImg = &image_grouse_fly_mid[0];
+        move();
+
+        if( _imgCounter < 1){
+            ++_imgCounter;
         }
-        else if(_actImg == &image_grouse_fly_mid[0]){
-            _actImg = &image_grouse_fly_low[0];
+        else{
+            _imgCounter = 0;
+            ++_actImg;
+            if( _actImg > 3 ){
+                _actImg = 0;
+            }
         }
-        else if(_actImg == &image_grouse_fly_low[0]){
-            _actImg = &image_grouse_fly_up[0];
-        }
+
     }
 
     virtual bool cover_callback( size_t x, size_t y, uint16_t& color ) override{
@@ -65,13 +77,19 @@ public:
             //size_t rel_y = y - _corn->lUp.y;
             size_t index = (y-_corn->lUp.y) * grouse_fly_x + (x-_corn->lUp.x);
 
-            if( _actImg[index] != grouse_fly_trans ){
-                color = _actImg[index];
+            if( _imgOrder[_actImg][index] != grouse_fly_trans ){
+                color = _imgOrder[_actImg][index];
                 return true;
             }
         }
 
         return false;
+    }
+
+private:
+
+    void move(){
+
     }
 
 

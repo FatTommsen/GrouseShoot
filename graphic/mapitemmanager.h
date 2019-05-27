@@ -13,6 +13,8 @@
 #include "task.h"
 #include "crosshair.h"
 #include "grousefly.h"
+#include "grouseflyreverse.h"
+#include "grousefishing.h"
 
 extern const size_t view_size;
 
@@ -36,6 +38,9 @@ private:
     Point* _mapViewOffset;
     bool _taskMode;
     InterfaceMapItem* _topLevelItem;
+
+    List<InterfaceMapItem>* _itemList;
+
     InterfaceMapItem* _grouseTest;
     Synchronizer* _sync;
     //MapItems
@@ -45,15 +50,20 @@ private:
     MapItemManager()
     : task("MapItemManager task"), _mapViewOffset(nullptr), _taskMode(true), _sync(nullptr)
     {
-        _topLevelItem = new Crosshair();
-        _grouseTest = new GrouseFly( 130, 50);
+        _topLevelItem = new Crosshair;
+        _itemList = new List<InterfaceMapItem>;
+
+        //Test
+        _itemList->push_back( new GrouseFlyReverse( 190, 50) );
+        _itemList->push_back( new GrouseFishing( 130, 120) );
     }
 
 
 public:
 
     ~MapItemManager(){
-
+        delete _topLevelItem;
+        delete _itemList;
     }
 
     void registerMapViewOffset( Point* p){
@@ -70,7 +80,19 @@ public:
         }
         size_t x_abs = x + _mapViewOffset->x;
         size_t y_abs = y + _mapViewOffset->y;
-        return _grouseTest->cover_callback(x_abs, y_abs, color);
+
+        List<InterfaceMapItem>::elem* it = _itemList->_head;
+        while( it != nullptr ){
+            if( it->_data->cover_callback(x_abs, y_abs, color)){
+                return true;
+            }
+            else{
+                it = it->_next;
+            }
+        }
+        return false;
+
+
     }
 
     void turnOffTaskMode(){
@@ -84,7 +106,11 @@ public:
             }
 
             _topLevelItem->update_position();
-            _grouseTest->update_position();
+            List<InterfaceMapItem>::elem* it = _itemList->_head;
+            while( it != nullptr ){
+                it->_data->update_position();
+                it = it->_next;
+            }
 
             if( _taskMode && _sync != nullptr ){
                 _sync->_mutex_crosshair->unlock();
@@ -92,6 +118,10 @@ public:
             }
 
         }while(_taskMode);
+    }
+
+    void itemOutOfMap( InterfaceMapItem* item ){
+
     }
 };
 

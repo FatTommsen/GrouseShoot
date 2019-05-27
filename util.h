@@ -23,6 +23,11 @@ struct Corners{
     Point rLow;
 };
 
+struct Path{
+    Point from;
+    Point to;
+};
+
 
 class Timer{
 
@@ -57,6 +62,90 @@ public:
         _mutex_map = new mutex<lock_base_msp432>();
         _mutex_crosshair = new mutex<lock_base_msp432>();
     }
+};
+
+
+template<typename T>
+class List{
+
+public:
+
+    struct elem{
+      elem* _next;
+      elem* _prev;
+      T* _data;
+
+      elem( T* data ){
+          _data = data;
+      }
+
+      ~elem(){
+          delete _data;
+      }
+    };
+
+    elem* _head;
+    elem* _tail;
+    size_t _size;
+
+    List()
+    : _head(nullptr), _tail(nullptr), _size(0)
+    {
+    }
+
+    ~List(){
+        elem* it = _head;
+        elem* next;
+        while( it != nullptr ){
+            next = it->_next;
+            delete it;
+            it = next;
+        }
+    }
+
+    void push_back( T* data ){
+        elem* e = new elem( data );
+        if( _head == nullptr ){
+            e->_next = nullptr;
+            e->_prev = nullptr;
+            _head = e;
+            _tail = e;
+            ++_size;
+        }
+        else{
+            e->_next = nullptr;
+            e->_prev = _tail;
+            _tail->_next = e;
+            ++_size;
+        }
+    }
+
+    bool remove( T* data ){
+        elem* it = _head;
+        for( size_t index = 0; index < _size; ++index){
+            if( it->_data == data ){
+                if( it == _head || it == _tail ){
+                    if( it == _head ){
+                        _head = it->_next;
+                        _head->_prev = nullptr;
+                    }
+                    if( it == _tail ){
+                        _tail = it->_prev;
+                        _tail->_next = nullptr;
+                    }
+                }
+                else{
+                    it->_next->_prev = it->_prev;
+                    it->_prev->_next = it->_next;
+                }
+                --_size;
+                delete it;
+                return true;
+            }
+        }
+        return false;
+    }
+
 };
 
 

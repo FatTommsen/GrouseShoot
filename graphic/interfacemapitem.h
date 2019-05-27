@@ -13,6 +13,7 @@ class InterfaceMapItem{
 public:
     virtual bool cover_callback( size_t x, size_t y, uint16_t& color ) = 0;
     virtual void update_position() = 0;
+    virtual ~InterfaceMapItem() = default;
 };
 
 
