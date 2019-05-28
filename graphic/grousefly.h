@@ -27,7 +27,7 @@ protected:
     int _imgCounter;
     const uint16_t* _imgOrder[4];
     Corners* _corn;
-    Path * _path;
+    Point * _path;
 
 public:
 
@@ -45,7 +45,7 @@ public:
         _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
         _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
 
-        _path = new Path;
+        _path = new Point;
     }
 
     virtual ~GrouseFly(){
@@ -84,6 +84,11 @@ public:
         }
 
         return false;
+    }
+
+    void setPath( Point& p ){
+        _path->x = p.x;
+        _path->y = p.y;
     }
 
 private:

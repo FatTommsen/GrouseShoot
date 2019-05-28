@@ -12,6 +12,9 @@
 #include "timer_msp432.h"
 #include "mutex.h"
 #include "lock_base_msp432.h"
+#include "uart_msp432.h"
+#include "std_io.h"
+#include "String.h"
 
 struct Point{
     size_t x;
@@ -22,12 +25,6 @@ struct Corners{
     Point lUp;
     Point rLow;
 };
-
-struct Path{
-    Point from;
-    Point to;
-};
-
 
 class Timer{
 
@@ -116,6 +113,7 @@ public:
             e->_next = nullptr;
             e->_prev = _tail;
             _tail->_next = e;
+            _tail = e;
             ++_size;
         }
     }
@@ -145,6 +143,79 @@ public:
         }
         return false;
     }
+
+};
+
+class Random{
+
+private:
+    int _seed;
+
+public:
+
+    Random(){
+        _seed = 15;
+    }
+
+    Random( int seed ){
+        if( seed < 0 ){
+            seed *= (-1);
+        }
+        _seed = seed & 0x1F;
+    }
+
+    ~Random(){
+
+    }
+
+    double next(){
+        _seed = ( 5 * _seed + 1234) % 1234;
+        double random = ((double)_seed) / 1234.;
+        return random;
+    }
+
+};
+
+class UartLogger{
+
+private:
+
+    uart_msp432* _uart;
+
+public:
+
+    UartLogger(){
+        _uart = new uart_msp432;
+        std_io::inst.redirect_stdout( *_uart );
+    }
+
+    ~UartLogger(){
+
+    }
+
+    UartLogger& log( String msg ){
+        printf(msg);
+        fflush( stdout );
+        return (*this);
+    }
+
+    UartLogger& log( double d ){
+        int vk = (int)d;
+        int nk = (int)(d * 10000);
+        nk = nk % 10000;
+        printf("%d,%04d" , vk, nk);
+        fflush( stdout );
+        return (*this);
+    }
+
+    UartLogger& log( int i ){
+        printf("%d" , i);
+        fflush( stdout );
+        return (*this);
+    }
+
+
+
 
 };
 

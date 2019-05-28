@@ -84,6 +84,14 @@ public:
         return y;
     }
 
+    int getZ(){
+        int z = _sensorZ->adcReadRaw();
+        if( z < 0 ){
+            z *= (-1);
+        }
+        return z;
+    }
+
 };
 
 
