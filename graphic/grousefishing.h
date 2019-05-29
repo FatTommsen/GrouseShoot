@@ -58,6 +58,10 @@ public:
         return false;
     }
 
+    virtual bool outOfMap() override{
+        return false;
+    }
+
 };
 
 

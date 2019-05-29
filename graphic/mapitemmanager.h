@@ -48,7 +48,6 @@ private:
 
     InterfaceMapItem* _grouseTest;
     Synchronizer* _sync;
-    //MapItems
 
 
 
@@ -115,7 +114,7 @@ public:
                 _sync->_mutex_crosshair->lock();
             }
 
-            if( _itemList->_size <= 3 ){
+            if( _itemList->_size <= 4 ){
                 createGrouseFly();
             }
 
@@ -139,7 +138,7 @@ public:
         Point start = getRandomBorderPoint();
         Point path = getPathPoint( start );
 
-        if( start.x < path.x ){
+        if( start.x > path.x ){
             GrouseFly* f = new GrouseFly(start.x, start.y);
             f->setPath(path);
             _itemList->push_back(f);
@@ -154,6 +153,18 @@ public:
 
     void createGrouseFishing(){
 
+    }
+
+    void deleteItemsOutOfMap(){
+        List<InterfaceMapItem>::elem* it = _itemList->_head;
+        while(it != nullptr){
+            if( it->_data->outOfMap() ){
+                _itemList->remove(it->_data);
+                deleteItemsOutOfMap();
+                return;
+            }
+            it = it->_next;
+        }
     }
 
 private:

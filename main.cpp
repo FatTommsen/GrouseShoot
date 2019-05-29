@@ -11,6 +11,7 @@
 #include "graphic/display.h"
 #include "task_monitor.h"
 #include "util.h"
+#include "gamemanager.h"
 
 int main(void)
 {
@@ -39,13 +40,14 @@ int main(void)
     Display task_display(task_map, sync, false);
     MapItemManager& task_manager = MapItemManager::getInstance();
     task_manager.turnOffTaskMode();
-
+    GameManager& task_game = GameManager::getInstance();
 
 
     while(true){
         task_map.run();
         task_manager.run();
         task_display.run();
+        task_game.run();
     }
 
     return 0;

@@ -15,6 +15,7 @@
 #include "uart_msp432.h"
 #include "std_io.h"
 #include "String.h"
+#include "util.h"
 
 struct Point{
     size_t x;
@@ -61,6 +62,45 @@ public:
     }
 };
 
+class UartLogger{
+
+private:
+
+    uart_msp432* _uart;
+
+public:
+
+    UartLogger(){
+        _uart = new uart_msp432;
+        std_io::inst.redirect_stdout( *_uart );
+    }
+
+    ~UartLogger(){
+        delete _uart;
+    }
+
+    UartLogger& log( String msg ){
+        printf(msg);
+        fflush( stdout );
+        return (*this);
+    }
+
+    UartLogger& log( double d ){
+        int vk = (int)d;
+        int nk = (int)(d * 10000);
+        nk = nk % 10000;
+        printf("%d,%04d" , vk, nk);
+        fflush( stdout );
+        return (*this);
+    }
+
+    UartLogger& log( int i ){
+        printf("%d" , i);
+        fflush( stdout );
+        return (*this);
+    }
+
+};
 
 template<typename T>
 class List{
@@ -120,26 +160,28 @@ public:
 
     bool remove( T* data ){
         elem* it = _head;
-        for( size_t index = 0; index < _size; ++index){
+
+        while( it != nullptr ){
             if( it->_data == data ){
-                if( it == _head || it == _tail ){
-                    if( it == _head ){
-                        _head = it->_next;
-                        _head->_prev = nullptr;
-                    }
-                    if( it == _tail ){
-                        _tail = it->_prev;
-                        _tail->_next = nullptr;
-                    }
-                }
-                else{
-                    it->_next->_prev = it->_prev;
-                    it->_prev->_next = it->_next;
-                }
-                --_size;
-                delete it;
-                return true;
-            }
+                 if( it == _head || it == _tail ){
+                     if( it == _head ){
+                         _head = it->_next;
+                         _head->_prev = nullptr;
+                     }
+                     if( it == _tail ){
+                         _tail = it->_prev;
+                         _tail->_next = nullptr;
+                     }
+                 }
+                 else{
+                     it->_next->_prev = it->_prev;
+                     it->_prev->_next = it->_next;
+                 }
+                 --_size;
+                 delete it;
+                 return true;
+             }
+            it = it->_next;
         }
         return false;
     }
@@ -176,51 +218,19 @@ public:
 
 };
 
-class UartLogger{
 
-private:
 
-    uart_msp432* _uart;
-
-public:
-
-    UartLogger(){
-        _uart = new uart_msp432;
-        std_io::inst.redirect_stdout( *_uart );
+inline int round( double d ){
+    int i = (int) (d * 10);
+    i = i % 10;
+    if( i < 5 ){
+        return (int)d;
     }
-
-    ~UartLogger(){
-
+    else if( i < 0 ){
+        return (int)(d - 1);
     }
-
-    UartLogger& log( String msg ){
-        printf(msg);
-        fflush( stdout );
-        return (*this);
-    }
-
-    UartLogger& log( double d ){
-        int vk = (int)d;
-        int nk = (int)(d * 10000);
-        nk = nk % 10000;
-        printf("%d,%04d" , vk, nk);
-        fflush( stdout );
-        return (*this);
-    }
-
-    UartLogger& log( int i ){
-        printf("%d" , i);
-        fflush( stdout );
-        return (*this);
-    }
-
-
-
-
-};
-
-
-
+    return (int)(d + 1);
+}
 
 
 

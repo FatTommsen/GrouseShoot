@@ -72,6 +72,10 @@ public:
         return false;
     }
 
+    virtual bool outOfMap() override{
+        return false;
+    }
+
 private:
 
     void moveCrosshairH( int rows ){

@@ -19,6 +19,8 @@ extern uint16_t image_grouse_fly_up[240];
 extern uint16_t image_grouse_fly_mid[240];
 extern uint16_t image_grouse_fly_low[240];
 
+const size_t grouse_fly_speed = 2;
+
 class GrouseFly : public InterfaceMapItem{
 
 protected:
@@ -28,11 +30,12 @@ protected:
     const uint16_t* _imgOrder[4];
     Corners* _corn;
     Point * _path;
+    bool _outOfMap;
 
 public:
 
     GrouseFly( uint16_t start_x, uint16_t start_y )
-    : _actImg(0), _imgCounter(0)
+    : _actImg(0), _imgCounter(0), _outOfMap(false)
     {
         _imgOrder[0] = &image_grouse_fly_up[0];
         _imgOrder[1] = &image_grouse_fly_mid[0];
@@ -55,7 +58,10 @@ public:
 
     virtual void update_position() override{
 
-        move();
+        if( _path != nullptr ){
+            move();
+        }
+
 
         if( _imgCounter < 1){
             ++_imgCounter;
@@ -91,10 +97,40 @@ public:
         _path->y = p.y;
     }
 
+    virtual bool outOfMap() override{
+        return _outOfMap;
+    }
+
 private:
 
     void move(){
+        if( _corn->lUp.x <= _path->x ){
+            //left to right
+            if( _path->x - _corn->lUp.x > grouse_fly_speed ){
+                double m = (double)(_corn->lUp.y - _path->y) / (double)(_corn->lUp.x - _path->x);
+                _corn->lUp.x += grouse_fly_speed;
+                _corn->lUp.y += round( m * (double)grouse_fly_speed );
+            }
+            else{
+                //item out of map
+                _outOfMap = true;
+            }
 
+        }
+        else{
+            //right to left
+            if( _corn->lUp.x - _path->x > grouse_fly_speed ){
+                double m = (double)(_corn->lUp.y - _path->y) / (double)(_corn->lUp.x - _path->x);
+                _corn->lUp.x -= grouse_fly_speed;
+                _corn->lUp.y += round( m * (double)grouse_fly_speed );
+            }
+            else{
+                //item out of map
+                _outOfMap = true;
+            }
+        }
+        _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
+        _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
     }
 
 
