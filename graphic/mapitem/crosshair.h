@@ -8,11 +8,11 @@
 #ifndef GRAPHIC_CROSSHAIR_H_
 #define GRAPHIC_CROSSHAIR_H_
 
+#include "../../periphery/joystick.h"
 #include "util.h"
 #include "interfacemapitem.h"
-#include "../sensor/joystick.h"
 
-extern const size_t view_size;
+extern const size_t DISPLAY_SIZE;
 extern const uint16_t color_crosshair_full;
 extern const uint16_t color_crosshair_trans;
 extern const uint16_t image_crosshiar[256];
@@ -95,12 +95,12 @@ private:
             }
         }
         else{
-            if( _corn->rLow.y >= view_size - 1 ){
+            if( _corn->rLow.y >= DISPLAY_SIZE - 1 ){
                 //already in button row
                 return;
             }
             else{
-                int move = view_size - _corn->rLow.y < (size_t)rows ? view_size - _corn->rLow.y : rows;
+                int move = DISPLAY_SIZE - _corn->rLow.y < (size_t)rows ? DISPLAY_SIZE - _corn->rLow.y : rows;
                 _corn->lUp.y += move;
                 _corn->rLow.y += move;
             }
@@ -124,12 +124,12 @@ private:
             }
         }
         else{
-            if( _corn->rLow.x >= view_size - 1 ){
+            if( _corn->rLow.x >= DISPLAY_SIZE - 1 ){
                 //already in very right col
                 return;
             }
             else{
-                int move = view_size - _corn->rLow.x < (size_t)cols ? view_size - _corn->rLow.x : cols;
+                int move = DISPLAY_SIZE - _corn->rLow.x < (size_t)cols ? DISPLAY_SIZE - _corn->rLow.x : cols;
                 _corn->lUp.x += move;
                 _corn->rLow.x += move;
             }

@@ -67,13 +67,22 @@ class UartLogger{
 private:
 
     uart_msp432* _uart;
-
-public:
+    static UartLogger* instance;
 
     UartLogger(){
         _uart = new uart_msp432;
         std_io::inst.redirect_stdout( *_uart );
     }
+
+public:
+
+    UartLogger& getInstance(){
+        if( UartLogger::instance == nullptr ){
+            UartLogger::instance = new UartLogger();
+        }
+        return *UartLogger::instance;
+    }
+
 
     ~UartLogger(){
         delete _uart;
@@ -211,8 +220,8 @@ public:
     }
 
     double next(){
-        _seed = ( 5 * _seed + 1234) % 1234;
-        double random = ((double)_seed) / 1234.;
+        _seed = ( 5 * _seed + 1237) % 1237;
+        double random = ((double)_seed) / 1237.;
         return random;
     }
 

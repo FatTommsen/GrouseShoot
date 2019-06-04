@@ -5,8 +5,8 @@
  *      Author: student
  */
 
-#ifndef SENSOR_OPTSENSOR_H_
-#define SENSOR_OPTSENSOR_H_
+#ifndef PERIPHERY_OPTSENSOR_H_
+#define PERIPHERY_OPTSENSOR_H_
 
 #include "i2c_msp432.h"
 
@@ -64,4 +64,4 @@ public:
 
 
 
-#endif /* SENSOR_OPTSENSOR_H_ */
+#endif /* PERIPHERY_OPTSENSOR_H_ */

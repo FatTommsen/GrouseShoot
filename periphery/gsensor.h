@@ -5,8 +5,8 @@
  *      Author: student
  */
 
-#ifndef SENSOR_GSENSOR_H_
-#define SENSOR_GSENSOR_H_
+#ifndef PERIPHERY_GSENSOR_H_
+#define PERIPHERY_GSENSOR_H_
 
 #include "adc14_msp432.h"
 #include "gpio_msp432.h"
@@ -96,4 +96,4 @@ public:
 
 
 
-#endif /* SENSOR_GSENSOR_H_ */
+#endif /* PERIPHERY_GSENSOR_H_ */

@@ -5,6 +5,6 @@
  *      Author: student
  */
 
-#include "gamemanager.h"
+#include "game.h"
 
-GameManager* GameManager::instance = nullptr;
+Game* Game::instance = nullptr;

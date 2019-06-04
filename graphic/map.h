@@ -9,42 +9,38 @@
 #define GRAPHIC_MAP_H_
 
 #include "util.h"
-#include "task.h"
 #include "mapitemmanager.h"
-#include "../sensor/gsensor.h"
+#include "../periphery/gsensor.h"
 
 const size_t map_lUp_x_start = 128;
 const size_t map_lUp_y_start = 44;
-const size_t map_scroll_per_tick = 5;
+const size_t map_scroll_per_tick = 10;
 
-extern const size_t view_size;
+//extern const size_t display_size;
 extern const unsigned int map_size_x;
 extern const unsigned int map_size_y;
 extern uint16_t image_map[82944];
 
-class Map : public task{
+class Map {
 
 private:
 
     Corners* _corn;
     uint16_t **_view;
-    Synchronizer& _sync;
     GSensor* _gSen;
-    bool _taskMode;
 
 public:
 
-    Map( Synchronizer& sync, bool taskMode = true )
-    : task("map task"), _sync(sync), _taskMode(taskMode) {
+    Map(){
 
-        _view = new uint16_t*[view_size];
+        _view = new uint16_t*[DISPLAY_SIZE];
         _corn = new Corners;
 
         _corn->lUp.x = map_lUp_x_start;
         _corn->lUp.y = map_lUp_y_start;
 
-        _corn->rLow.x = _corn->lUp.x + view_size;
-        _corn->rLow.y = _corn->lUp.y + view_size;
+        _corn->rLow.x = _corn->lUp.x + DISPLAY_SIZE;
+        _corn->rLow.y = _corn->lUp.y + DISPLAY_SIZE;
 
         updateView();
 
@@ -63,27 +59,16 @@ public:
         return _view;
     }
 
-    void run() override{
-        do{
-            _gSen->measure();
+    void run() {
+        _gSen->measure();
 
-            int x = _gSen->getAndResetX();
-            int y = _gSen->getAndResetY();
+        int x = _gSen->getAndResetX();
+        int y = _gSen->getAndResetY();
 
-            moveViewH( y * map_scroll_per_tick );
-            moveViewV( x * map_scroll_per_tick );
-            if(_taskMode)
-                _sync._mutex_map->lock();
+        moveViewH( y * map_scroll_per_tick );
+        moveViewV( x * map_scroll_per_tick );
 
-            updateView();
-
-            if( _taskMode ){
-                _sync._mutex_map->unlock();
-                yield();
-            }
-
-        }while(_taskMode);
-
+        updateView();
     }
 
 private:
@@ -91,7 +76,7 @@ private:
     void updateView(){
         size_t lUp_y_absolute = _corn->lUp.y * map_size_x + _corn->lUp.x;
         _view[0] = &image_map[lUp_y_absolute];
-        for( size_t i = 1; i < view_size; ++i ){
+        for( size_t i = 1; i < DISPLAY_SIZE; ++i ){
             _view[i] = _view[0] + i * map_size_x;
         }
     }

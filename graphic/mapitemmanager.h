@@ -8,21 +8,20 @@
 #ifndef GRAPHIC_MAPITEMMANAGER_H_
 #define GRAPHIC_MAPITEMMANAGER_H_
 
+#include "../periphery/gsensor.h"
+#include "../periphery/optsensor.h"
 #include "util.h"
-#include "interfacemapitem.h"
-#include "../sensor/optsensor.h"
-#include "../sensor/gsensor.h"
-#include "task.h"
-#include "crosshair.h"
-#include "grousefly.h"
-#include "grouseflyreverse.h"
-#include "grousefishing.h"
+#include "mapitem/interfacemapitem.h"
+#include "mapitem/crosshair.h"
+#include "mapitem/grousefly.h"
+#include "mapitem/grouseflyreverse.h"
+#include "mapitem/grousefishing.h"
 
 extern const unsigned int map_size_x;
 extern const unsigned int map_size_y;
 extern const size_t view_size;
 
-class MapItemManager : public task{
+class MapItemManager {
 
 private:
     static MapItemManager* instance;
@@ -41,25 +40,23 @@ private:
 
     Random* _rand;
     Point* _mapViewOffset;
-    bool _taskMode;
     InterfaceMapItem* _topLevelItem;
 
     List<InterfaceMapItem>* _itemList;
 
     InterfaceMapItem* _grouseTest;
-    Synchronizer* _sync;
 
 
 
     MapItemManager()
-    : task("MapItemManager task"), _mapViewOffset(nullptr), _taskMode(true), _sync(nullptr)
+    : _mapViewOffset(nullptr)
     {
         _topLevelItem = new Crosshair;
         _itemList = new List<InterfaceMapItem>;
 
         //Test
         //_itemList->push_back( new GrouseFlyReverse( 190, 50) );
-        _itemList->push_back( new GrouseFishing( 130, 120) );
+        //_itemList->push_back( new GrouseFishing( 130, 120) );
 
         GSensor gSen;
         OptSensor optSen;
@@ -79,9 +76,6 @@ public:
         _mapViewOffset = p;
     }
 
-    void registerSynchronizer( Synchronizer* sync ){
-        _sync = sync;
-    }
 
     bool coverCallback( size_t x, size_t y, uint16_t& color ){
         if( _topLevelItem->cover_callback( x, y, color ) ){
@@ -104,33 +98,19 @@ public:
 
     }
 
-    void turnOffTaskMode(){
-        _taskMode = false;
-    }
+    void run() {
+/*
+        if( _itemList->_size <= 4 ){
+            createGrouseFly();
+        }
+*/
+        _topLevelItem->update_position();
+        List<InterfaceMapItem>::elem* it = _itemList->_head;
+        while( it != nullptr ){
+            it->_data->update_position();
+            it = it->_next;
+        }
 
-    void run() override{
-        do{
-            if( _taskMode && _sync != nullptr ){
-                _sync->_mutex_crosshair->lock();
-            }
-
-            if( _itemList->_size <= 4 ){
-                createGrouseFly();
-            }
-
-            _topLevelItem->update_position();
-            List<InterfaceMapItem>::elem* it = _itemList->_head;
-            while( it != nullptr ){
-                it->_data->update_position();
-                it = it->_next;
-            }
-
-            if( _taskMode && _sync != nullptr ){
-                _sync->_mutex_crosshair->unlock();
-                yield();
-            }
-
-        }while(_taskMode);
     }
 
     void createGrouseFly(){

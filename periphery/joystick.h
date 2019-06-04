@@ -5,8 +5,8 @@
  *      Author: student
  */
 
-#ifndef SENSOR_JOYSTICK_H_
-#define SENSOR_JOYSTICK_H_
+#ifndef PERIPHERY_JOYSTICK_H_
+#define PERIPHERY_JOYSTICK_H_
 
 #include "adc14_msp432.h"
 
@@ -81,4 +81,4 @@ public:
 
 
 
-#endif /* SENSOR_JOYSTICK_H_ */
+#endif /* PERIPHERY_JOYSTICK_H_ */

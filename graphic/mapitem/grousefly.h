@@ -63,7 +63,7 @@ public:
         }
 
 
-        if( _imgCounter < 1){
+        if( _imgCounter < 0){
             ++_imgCounter;
         }
         else{
