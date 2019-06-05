@@ -8,15 +8,14 @@
 #ifndef GRAPHIC_MAP_H_
 #define GRAPHIC_MAP_H_
 
-#include "util.h"
-#include "mapitemmanager.h"
+#include "util/util.h"
 #include "../periphery/gsensor.h"
 
-const size_t map_lUp_x_start = 128;
-const size_t map_lUp_y_start = 44;
-const size_t map_scroll_per_tick = 10;
+extern const size_t DISPLAY_SIZE;
+extern const size_t map_lUp_x_start;
+extern const size_t map_lUp_y_start;
+extern const size_t map_scroll_per_tick;
 
-//extern const size_t display_size;
 extern const unsigned int map_size_x;
 extern const unsigned int map_size_y;
 extern uint16_t image_map[82944];
@@ -45,8 +44,6 @@ public:
         updateView();
 
         _gSen = new GSensor();
-
-        MapItemManager::getInstance().registerMapViewOffset( &(_corn->lUp) );
     }
 
     ~Map(){
@@ -59,16 +56,20 @@ public:
         return _view;
     }
 
-    void run() {
+    bool update() {
         _gSen->measure();
 
         int x = _gSen->getAndResetX();
         int y = _gSen->getAndResetY();
 
-        moveViewH( y * map_scroll_per_tick );
-        moveViewV( x * map_scroll_per_tick );
+        if( x != 0 || y != 0){
+            moveViewH( y * map_scroll_per_tick );
+            moveViewV( x * map_scroll_per_tick );
+            updateView();
+            return true;
+        }
 
-        updateView();
+        return false;
     }
 
 private:

@@ -12,10 +12,7 @@
 #include "spi_msp432.h"
 #include "st7735s_drv.h"
 #include "../custom_yahal/uGUI_2layer.h"
-#include "../graphic/map.h"
-#include "../graphic/mapitem/crosshair.h"
 
-extern const size_t DISPLAY_SIZE;
 
 class Display {
 
@@ -28,15 +25,12 @@ private:
     gpio_msp432_pin* _lcd_dc;
     st7735s_drv* _lcd;
     uGUI_2layer* _gui;
-    uGUI_2layer::BMP_2layer* _bmp;
-
-    Map& _map;
+    uGUI_2layer::BMP_2layer* _bmp_map;
 
 public:
 
-    Display(Map& map)
-    : _map(map)
-    {
+    Display(){
+
         _lcd_backlight = new gpio_msp432_pin (PORT_PIN(2, 6));
         _lcd_cs = new gpio_msp432_pin (PORT_PIN(5, 0));
         _spi = new spi_msp432(EUSCI_B0_SPI, *_lcd_cs);
@@ -46,11 +40,10 @@ public:
         _lcd = new st7735s_drv(*_spi, *_lcd_rst, *_lcd_dc, st7735s_drv::Crystalfontz_128x128);
         _gui = new uGUI_2layer(*_lcd);
 
-        _bmp = new uGUI_2layer::BMP_2layer();
-        _bmp->_screen_size = DISPLAY_SIZE;
-        _bmp->bpp = 16;
-        _bmp->colors = BMP_RGB565;
-        _bmp->_layer_callback = mapItemCoverCallback;
+        _bmp_map = new uGUI_2layer::BMP_2layer();
+        _bmp_map->_screen_size = DISPLAY_SIZE;
+        _bmp_map->bpp = 16;
+        _bmp_map->colors = BMP_RGB565;
     }
 
     ~Display(){
@@ -61,13 +54,25 @@ public:
         delete _lcd_dc;
         delete _lcd;
         delete _gui;
-        delete _bmp;
+        delete _bmp_map;
     }
 
+
+    void quickDrawMap( const void** map_view ){
+        _bmp_map->p = map_view;
+        _gui->drawMap(0, 0, _bmp_map);
+    }
+
+    uGUI_2layer& getGui(){
+        return *_gui;
+    }
+
+/*
     void run() {
         _bmp->p = (const void**) _map.getCurrentView();
-        _gui->DrawBMP_2layer(0, 0, _bmp);
+        _gui->DrawBMP_2layer(0, 0, _bmp_map);
     }
+*/
 };
 
 

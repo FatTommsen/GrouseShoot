@@ -9,8 +9,9 @@
 #define GRAPHICMANAGER_H_
 
 #include "graphic/map.h"
+#include "graphic/mapitemmanager.h"
 
-//#include "periphery/display.h"
+#include "periphery/display.h"
 
 class GraphicManager{
 
@@ -28,21 +29,42 @@ public:
     }
 
 
-    Map* map;
-//    Display* display;
-
+    Map* _map;
+    MapItemManager* _itemManager;
+    Display* _display;
 
     GraphicManager(){
-
+        _map = new Map;
+        _itemManager = new MapItemManager;
+        _display = new Display;
     }
 
 public:
 
-
-
     ~GraphicManager(){
-
+        delete _map;
+        delete _itemManager;
+        delete _display;
     }
+
+    //main graphic method
+    void updateScreen(){
+        _itemManager->updateItemPositions();
+        if( _map->update() ){
+            uint16_t** map_view = _map->getCurrentView();
+            _display->quickDrawMap( (const void**)map_view );
+            _itemManager->updateScreenPositions(_display->getGui());
+
+
+            // alle Items neu zweichnen
+        }
+        else{
+            _itemManager->updateScreenPositions(_display->getGui());
+        }
+
+        //_itemManager->deleteItemsOutOfMap();
+    }
+
 };
 
 

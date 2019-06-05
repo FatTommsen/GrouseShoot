@@ -10,11 +10,13 @@
 
 #include "uGUI.h"
 #include "pixel_stream_2layer.h"
+#include "../util/util.h"
 
 class uGUI_2layer : public uGUI{
 
 private:
     lcd_interface & _lcd;
+    uint16_t** _map;
 
 public:
     uGUI_2layer(lcd_interface & lcd )
@@ -32,6 +34,11 @@ public:
         uint8_t colors;
     };
 
+    void drawMap(int16_t xp, int16_t yp, BMP_2layer* bmp){
+        DrawBMP_2layer(xp, yp, bmp);
+        _map = (uint16_t**) bmp->p;
+    }
+
     void DrawBMP_2layer(int16_t xp, int16_t yp, BMP_2layer* bmp)
     {
         if (bmp->p == nullptr)
@@ -46,6 +53,14 @@ public:
             ps.setLayerCallback( bmp->_layer_callback );
         }
         _lcd.drawArea(xp, yp, xp + bmp->_screen_size - 1, yp + bmp->_screen_size - 1, ps);
+    }
+
+    void removeItemFromMap( const Corners& corn ){
+        for( size_t y = corn.lUp.y; y < corn.rLow.y; ++y ){
+            for( size_t x = corn.lUp.x; x < corn.rLow.x; ++x ){
+                DrawPixel(x, y, _map[y][x]| LCD::COLORTYPE_RGB565);
+            }
+        }
     }
 
 };

@@ -35,7 +35,7 @@ public:
     }
 
     void run(){
-        MapItemManager::getInstance().deleteItemsOutOfMap();
+        //MapItemManager::getInstance().deleteItemsOutOfMap();
     }
 
 };

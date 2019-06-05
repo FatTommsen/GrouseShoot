@@ -9,30 +9,29 @@
 #define GRAPHIC_CROSSHAIR_H_
 
 #include "../../periphery/joystick.h"
-#include "util.h"
-#include "interfacemapitem.h"
+#include "interfaceviewitem.h"
+#include "../../util/util.h"
+#include "../../custom_yahal/uGUI_2layer.h"
 
 extern const size_t DISPLAY_SIZE;
 extern const uint16_t color_crosshair_full;
 extern const uint16_t color_crosshair_trans;
 extern const uint16_t image_crosshiar[256];
 
-const size_t crosshair_lUp_x = 40;
-const size_t crosshair_lUp_y = 40;
-const size_t crosshair_scroll_per_tick = 5;
+extern const size_t crosshair_lUp_x;
+extern const size_t crosshair_lUp_y;
+extern const size_t crosshair_scroll_per_tick;
 
 
-class Crosshair : public InterfaceMapItem{
+class Crosshair : public InterfaceViewItem{
 
 private:
-    Corners* _corn;
     Joystick* _joy;
 
 public:
 
     Crosshair( )
     {
-        _corn = new Corners();
         _corn->lUp.x = crosshair_lUp_x;
         _corn->lUp.y = crosshair_lUp_y;
 
@@ -44,7 +43,6 @@ public:
     }
 
     virtual ~Crosshair(){
-        delete _corn;
         delete _joy;
     }
 
@@ -72,13 +70,12 @@ public:
         return false;
     }
 
-    virtual bool outOfMap() override{
-        return false;
-    }
 
 private:
 
     void moveCrosshairH( int rows ){
+        _oldCorn->lUp.y = _corn->lUp.y;
+        _oldCorn->rLow.y = _corn->rLow.y;
         if( rows == 0 ){
             //nothing to do here
             return;
@@ -108,6 +105,8 @@ private:
     }
 
     void moveCrosshairV( int cols ){
+        _oldCorn->lUp.x = _corn->lUp.x;
+        _oldCorn->rLow.x = _corn->rLow.x;
         if( cols == 0 ){
             //nothing to do here
             return;
@@ -133,6 +132,26 @@ private:
                 _corn->lUp.x += move;
                 _corn->rLow.x += move;
             }
+        }
+    }
+
+    void drawItem( uGUI_2layer& gui ){
+        if( *_oldCorn != *_corn ){
+            gui.removeItemFromMap( *_oldCorn );
+            *_oldCorn = *_corn;
+        }
+        size_t x_img = 0;
+        size_t y_img = 0;
+        for( size_t y = _corn->lUp.y; y < _corn->rLow.y; ++y ){
+            for( size_t x = _corn->lUp.x; x < _corn->rLow.x; ++x ){
+                uint16_t color = image_crosshiar[y_img * 16 + x_img];
+                if( color != color_crosshair_trans ){
+                    gui.DrawPixel(x, y, color| LCD::COLORTYPE_RGB565);
+                }
+                ++x_img;
+            }
+            ++y_img;
+            x_img = 0;
         }
     }
 
