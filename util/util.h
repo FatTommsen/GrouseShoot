@@ -46,6 +46,32 @@ struct Corners{
     }
 };
 
+struct pixel{
+    uint16_t* map;
+    uint16_t* item;
+
+    pixel():map(nullptr), item(nullptr){};
+};
+
+inline size_t min( size_t x1, size_t x2 ){
+    return x1 <= x2 ? x1 : x2;
+}
+
+inline size_t max( size_t x1, size_t x2 ){
+    return x1 >= x2 ? x1 : x2;
+}
+
+inline int round( double d ){
+    int i = (int) (d * 10);
+    i = i % 10;
+    if( i < 5 ){
+        return (int)d;
+    }
+    else if( i < 0 ){
+        return (int)(d - 1);
+    }
+    return (int)(d + 1);
+}
 
 
 #endif /* UTIL_H_ */

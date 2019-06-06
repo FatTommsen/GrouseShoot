@@ -8,35 +8,24 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-#include "graphic/mapitemmanager.h"
 
 class Game{
 
 private:
 
-    static Game* instance;
 
+public:
 
     Game() {
 
     }
-public:
 
-    static Game& getInstance(){
-        if( Game::instance == nullptr ){
-            Game::instance = new Game();
-        }
-        return *Game::instance;
-    }
 
 
     ~Game(){
 
     }
 
-    void run(){
-        //MapItemManager::getInstance().deleteItemsOutOfMap();
-    }
 
 };
 

@@ -13,6 +13,7 @@
 #include "st7735s_drv.h"
 #include "../custom_yahal/uGUI_2layer.h"
 
+extern const uint16_t TRANSPARENT_COLOR;
 
 class Display {
 
@@ -44,6 +45,7 @@ public:
         _bmp_map->_screen_size = DISPLAY_SIZE;
         _bmp_map->bpp = 16;
         _bmp_map->colors = BMP_RGB565;
+        _bmp_map->trans_color = TRANSPARENT_COLOR;
     }
 
     ~Display(){
@@ -58,21 +60,12 @@ public:
     }
 
 
-    void quickDrawMap( const void** map_view ){
-        _bmp_map->p = map_view;
-        _gui->drawMap(0, 0, _bmp_map);
-    }
-
-    uGUI_2layer& getGui(){
-        return *_gui;
-    }
-
-/*
-    void run() {
-        _bmp->p = (const void**) _map.getCurrentView();
+    void drawTwoLayer( const void** map_view, const void** view_cover ){
+        _bmp_map->background = map_view;
+        _bmp_map->cover = view_cover;
         _gui->DrawBMP_2layer(0, 0, _bmp_map);
     }
-*/
+
 };
 
 

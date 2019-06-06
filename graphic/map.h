@@ -11,13 +11,13 @@
 #include "util/util.h"
 #include "../periphery/gsensor.h"
 
-extern const size_t DISPLAY_SIZE;
-extern const size_t map_lUp_x_start;
-extern const size_t map_lUp_y_start;
-extern const size_t map_scroll_per_tick;
+extern const uint8_t DISPLAY_SIZE;
+extern const uint8_t MAP_START_X;
+extern const uint8_t MAP_START_Y;
+extern const uint8_t MAP_SCROLL_SPEED;
 
-extern const unsigned int map_size_x;
-extern const unsigned int map_size_y;
+extern const size_t map_size_x;
+extern const size_t map_size_y;
 extern uint16_t image_map[82944];
 
 class Map {
@@ -35,8 +35,8 @@ public:
         _view = new uint16_t*[DISPLAY_SIZE];
         _corn = new Corners;
 
-        _corn->lUp.x = map_lUp_x_start;
-        _corn->lUp.y = map_lUp_y_start;
+        _corn->lUp.x = MAP_START_X;
+        _corn->lUp.y = MAP_START_Y;
 
         _corn->rLow.x = _corn->lUp.x + DISPLAY_SIZE;
         _corn->rLow.y = _corn->lUp.y + DISPLAY_SIZE;
@@ -44,6 +44,7 @@ public:
         updateView();
 
         _gSen = new GSensor();
+
     }
 
     ~Map(){
@@ -56,20 +57,21 @@ public:
         return _view;
     }
 
-    bool update() {
+    void update() {
         _gSen->measure();
 
         int x = _gSen->getAndResetX();
         int y = _gSen->getAndResetY();
 
         if( x != 0 || y != 0){
-            moveViewH( y * map_scroll_per_tick );
-            moveViewV( x * map_scroll_per_tick );
+            moveViewH( y * MAP_SCROLL_SPEED );
+            moveViewV( x * MAP_SCROLL_SPEED );
             updateView();
-            return true;
         }
+    }
 
-        return false;
+    const Corners& getCorners(){
+        return *_corn;
     }
 
 private:

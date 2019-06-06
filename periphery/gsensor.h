@@ -11,7 +11,7 @@
 #include "adc14_msp432.h"
 #include "gpio_msp432.h"
 
-const int gsensor_trigger = 400;
+extern const uint8_t SENSOR_TRIGGER_G;
 
 class GSensor {
 
@@ -50,10 +50,10 @@ public:
         int y = _sensorY->adcReadRaw() - _offset;
 
         // Analyze X-Movement
-        if( x > gsensor_trigger ){
+        if( x > SENSOR_TRIGGER_G ){
             _moveX = 1;
         }
-        else if ( x < (-1) * gsensor_trigger ){
+        else if ( x < (-1) * SENSOR_TRIGGER_G ){
             _moveX = -1;
         }
         else{
@@ -61,10 +61,10 @@ public:
         }
 
         // Analyze Y-Movement
-        if( y > gsensor_trigger ){
+        if( y > SENSOR_TRIGGER_G ){
             _moveY = -1;
         }
-        else if ( y < (-1) * gsensor_trigger ){
+        else if ( y < (-1) * SENSOR_TRIGGER_G ){
             _moveY = 1;
         }
         else{

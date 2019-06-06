@@ -10,7 +10,7 @@
 
 #include "adc14_msp432.h"
 
-const int joystick_trigger = 200;
+extern const uint8_t SENSOR_TRIGGER_JOY;
 
 class Joystick{
 
@@ -45,20 +45,20 @@ public:
         int x = _joyX->adcReadRaw() - _offset;
         int y = _joyY->adcReadRaw() - _offset;
 
-        if( x < joystick_trigger * (-1)){
+        if( x < SENSOR_TRIGGER_JOY * (-1)){
             _moveX = -1;
         }
-        else if( x > joystick_trigger ){
+        else if( x > SENSOR_TRIGGER_JOY ){
             _moveX = 1;
         }
         else{
             _moveX = 0;
         }
 
-        if( y < joystick_trigger * (-1) ){
+        if( y < SENSOR_TRIGGER_JOY * (-1) ){
             _moveY = 1;
         }
-        else if( y > joystick_trigger ){
+        else if( y > SENSOR_TRIGGER_JOY ){
             _moveY = -1;
         }
         else{

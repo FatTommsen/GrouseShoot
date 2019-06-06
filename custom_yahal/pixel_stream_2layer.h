@@ -7,15 +7,15 @@ class pixel_stream_2layer : public pixel_stream_rgb565{
 private:
 
     const uint16_t ** _data;
+    const uint16_t ** _data_cover;
     size_t            _screen_size;
     size_t            _index;
-    bool(*_layer_callback)( size_t, size_t, uint16_t& color);
+    uint16_t          _trans_color;
 
 public:
 
-    pixel_stream_2layer( const uint16_t **data, size_t screen_size )
-    : pixel_stream_rgb565(nullptr, 0), _data(data), _screen_size(screen_size), _index(0),
-      _layer_callback(nullptr)
+    pixel_stream_2layer( const uint16_t **data, const uint16_t **data_cover, size_t screen_size, uint16_t trans_color )
+    : pixel_stream_rgb565(nullptr, 0), _data(data), _data_cover(data_cover), _screen_size(screen_size), _index(0), _trans_color(trans_color)
     {
 
     }
@@ -28,18 +28,12 @@ public:
         size_t x = (_index) % _screen_size;
         ++_index;
 
-        // determine whether pixel is overwritten with top layer
-        uint16_t color_cover;
-        if( _layer_callback != nullptr && _layer_callback(x, y, color_cover) ){
-            return color_cover | LCD::COLORTYPE_RGB565;
+        if( _data_cover[y][x] != _trans_color ){
+            return _data_cover[y][x] | LCD::COLORTYPE_RGB565;
         }
 
         // writes columns from top to down
         return _data[y][x] | LCD::COLORTYPE_RGB565;
-    }
-
-    void setLayerCallback( bool(*layer_callback)( size_t, size_t, uint16_t& color) ){
-        _layer_callback = layer_callback;
     }
 
 };

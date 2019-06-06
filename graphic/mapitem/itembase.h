@@ -9,30 +9,25 @@
 #define GRAPHIC_INTERFACEMAPITEM_H_
 
 #include "../../util/util.h"
-#include "../../custom_yahal/uGUI_2layer.h"
 
-class InterfaceItem{
+class ItemBase{
 
 protected:
 
     Corners* _corn;
-    Corners* _oldCorn;
 
 public:
-    virtual bool cover_callback( size_t x, size_t y, uint16_t& color ) = 0;
+
     virtual void update_position() = 0;
 
-    InterfaceItem(){
+    ItemBase(){
         _corn = new Corners;
-        _oldCorn = new Corners;
     }
 
-    virtual ~InterfaceItem(){
+    virtual ~ItemBase(){
         delete _corn;
-        delete _oldCorn;
     }
 
-    virtual void drawItem( uGUI_2layer& gui ) = 0;
 };
 
 

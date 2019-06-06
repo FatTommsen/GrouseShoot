@@ -8,134 +8,120 @@
 #ifndef GRAPHIC_GROUSEFLY_H_
 #define GRAPHIC_GROUSEFLY_H_
 
-//#include "interfacemapitem.h"
-//#include "util.h"
-//
-//extern uint16_t grouse_fly_x;
-//extern uint16_t grouse_fly_y;
-//extern uint16_t grouse_fly_trans;
-//
-//extern uint16_t image_grouse_fly_up[240];
-//extern uint16_t image_grouse_fly_mid[240];
-//extern uint16_t image_grouse_fly_low[240];
-//
-//const size_t grouse_fly_speed = 2;
-//
-//class GrouseFly : public InterfaceMapItem{
-//
-//protected:
-//
-//    size_t _actImg;
-//    int _imgCounter;
-//    const uint16_t* _imgOrder[4];
-//    Corners* _corn;
-//    Point * _path;
-//    bool _outOfMap;
-//
-//public:
-//
-//    GrouseFly( uint16_t start_x, uint16_t start_y )
-//    : _actImg(0), _imgCounter(0), _outOfMap(false)
-//    {
-//        _imgOrder[0] = &image_grouse_fly_up[0];
-//        _imgOrder[1] = &image_grouse_fly_mid[0];
-//        _imgOrder[2] = &image_grouse_fly_low[0];
-//        _imgOrder[3] = &image_grouse_fly_mid[0];
-//        _corn = new Corners;
-//        _corn->lUp.x = start_x;
-//        _corn->lUp.y = start_y;
-//
-//        _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
-//        _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
-//
-//        _path = new Point;
-//    }
-//
-//    virtual ~GrouseFly(){
-//        delete _corn;
-//        delete _path;
-//    }
-//
-//    virtual void update_position() override{
-//
-//        if( _path != nullptr ){
-//            move();
-//        }
-//
-//
-//        if( _imgCounter < 0){
-//            ++_imgCounter;
-//        }
-//        else{
-//            _imgCounter = 0;
-//            ++_actImg;
-//            if( _actImg > 3 ){
-//                _actImg = 0;
-//            }
-//        }
-//
-//    }
-//
-//    virtual bool cover_callback( size_t x, size_t y, uint16_t& color ) override{
-//
-//        if( x >= _corn->lUp.x && x < _corn->rLow.x && y >= _corn->lUp.y && y < _corn->rLow.y ){
-//            //size_t rel_x = x - _corn->lUp.x;
-//            //size_t rel_y = y - _corn->lUp.y;
-//            size_t index = (y-_corn->lUp.y) * grouse_fly_x + (x-_corn->lUp.x);
-//
-//            if( _imgOrder[_actImg][index] != grouse_fly_trans ){
-//                color = _imgOrder[_actImg][index];
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
-//
-//    void setPath( Point& p ){
-//        _path->x = p.x;
-//        _path->y = p.y;
-//    }
-//
-//    virtual bool outOfMap() override{
-//        return _outOfMap;
-//    }
-//
-//private:
-//
-//    void move(){
-//        if( _corn->lUp.x <= _path->x ){
-//            //left to right
-//            if( _path->x - _corn->lUp.x > grouse_fly_speed ){
-//                double m = (double)(_corn->lUp.y - _path->y) / (double)(_corn->lUp.x - _path->x);
-//                _corn->lUp.x += grouse_fly_speed;
-//                _corn->lUp.y += round( m * (double)grouse_fly_speed );
-//            }
-//            else{
-//                //item out of map
-//                _outOfMap = true;
-//            }
-//
-//        }
-//        else{
-//            //right to left
-//            if( _corn->lUp.x - _path->x > grouse_fly_speed ){
-//                double m = (double)(_corn->lUp.y - _path->y) / (double)(_corn->lUp.x - _path->x);
-//                _corn->lUp.x -= grouse_fly_speed;
-//                _corn->lUp.y += round( m * (double)grouse_fly_speed );
-//            }
-//            else{
-//                //item out of map
-//                _outOfMap = true;
-//            }
-//        }
-//        _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
-//        _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
-//    }
-//
-//
-//
-//};
+#include "../../util/util.h"
+#include "mapitembase.h"
+
+extern uint16_t grouse_fly_x;
+extern uint16_t grouse_fly_y;
+
+extern uint16_t image_grouse_fly_up[240];
+extern uint16_t image_grouse_fly_mid[240];
+extern uint16_t image_grouse_fly_low[240];
+
+extern const uint8_t GROUSE_FLY_SPEED;
+extern const uint8_t GROUSE_ANIMATION_SPEED;
+
+class GrouseFly : public MapItemBase{
+
+protected:
+
+    size_t _actImg;
+    int _imgCounter;
+    const uint16_t* _imgOrder[4];
+    Point * _path;
+    bool _outOfMap;
+
+public:
+
+    GrouseFly()
+    : MapItemBase(grouse_fly_x, grouse_fly_y, image_grouse_fly_up), _actImg(0), _imgCounter(0), _outOfMap(false)
+    {
+        _imgOrder[0] = &image_grouse_fly_up[0];
+        _imgOrder[1] = &image_grouse_fly_mid[0];
+        _imgOrder[2] = &image_grouse_fly_low[0];
+        _imgOrder[3] = &image_grouse_fly_mid[0];
+
+        Point start = getRandomBorderPoint();
+
+        _corn->lUp.x = start.x;
+        _corn->lUp.y = start.x;
+
+        _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
+        _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
+
+        _path = new Point;
+        Point end = getPathPoint(start);
+        *_path = end;
+
+        if( start.x < end.x ){
+            _img_reverse = true;
+        }
+    }
+
+    virtual ~GrouseFly(){
+        delete _path;
+    }
+
+    virtual void update_position() override{
+
+        if( _path != nullptr ){
+           move();
+        }
+
+
+        if( _imgCounter < GROUSE_ANIMATION_SPEED){
+            ++_imgCounter;
+        }
+        else{
+            _imgCounter = 0;
+            ++_actImg;
+            if( _actImg > 3 ){
+                _actImg = 0;
+            }
+            _image = _imgOrder[_actImg];
+        }
+
+    }
+
+    virtual bool outOfMap() override{
+        return _outOfMap;
+    }
+
+private:
+
+    void move(){
+        if( _corn->lUp.x <= _path->x ){
+            //left to right
+            if( _path->x - _corn->lUp.x > GROUSE_FLY_SPEED ){
+                double m = (double)(_corn->lUp.y - _path->y) / (double)(_corn->lUp.x - _path->x);
+                _corn->lUp.x += GROUSE_FLY_SPEED;
+                _corn->lUp.y += round( m * (double)GROUSE_FLY_SPEED );
+            }
+            else{
+                //item out of map
+                _outOfMap = true;
+            }
+
+        }
+        else{
+            //right to left
+            if( _corn->lUp.x - _path->x > GROUSE_FLY_SPEED ){
+                double m = (double)(_corn->lUp.y - _path->y) / (double)(_corn->lUp.x - _path->x);
+                _corn->lUp.x -= GROUSE_FLY_SPEED;
+                _corn->lUp.y += round( m * (double)GROUSE_FLY_SPEED );
+            }
+            else{
+                //item out of map
+                _outOfMap = true;
+            }
+        }
+        _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
+        _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
+    }
+
+
+
+};
 
 
 

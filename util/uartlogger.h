@@ -27,7 +27,7 @@ private:
 
 public:
 
-    UartLogger& getInstance(){
+    static UartLogger& getInstance(){
         if( UartLogger::instance == nullptr ){
             UartLogger::instance = new UartLogger();
         }
