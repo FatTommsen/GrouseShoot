@@ -47,6 +47,10 @@ public:
     const uint16_t getTypeId(){
         return _type_id;
     }
+
+    const Corners& getCorners(){
+        return *_corn;
+    }
 };
 
 

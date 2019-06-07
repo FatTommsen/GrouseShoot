@@ -22,7 +22,7 @@ private:
 public:
 
     EdumkIIButtons()
-    : _topButton(false), _lowButton(false)
+    : _topPushed(false), _lowPushed(false)
     {
         _topButton = new gpio_msp432_pin(PORT_PIN(5, 1));
         _lowButton = new gpio_msp432_pin(PORT_PIN(3, 5));
@@ -40,11 +40,20 @@ public:
         if( _topPushed ){
             _topPushed = false;
         }
-        return !_topButton->gpioRead();
+        else{
+            _topPushed = !_topButton->gpioRead();
+        }
+        return _topPushed;
     }
 
     bool lowButtonPushed(){
-        return !_lowButton->gpioRead();
+        if( _lowPushed ){
+            _lowPushed = false;
+        }
+        else{
+            _lowPushed = !_lowButton->gpioRead();
+        }
+        return _lowPushed;
     }
 
 };

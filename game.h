@@ -39,6 +39,9 @@ public:
             _gManager->updateScreen();
             if( buttons.topButtonPushed() ){
                 _itemManager->deleteOneCartridge();
+                if(_itemManager->getCartridgeCount() > 0){
+                    _itemManager->processShot();
+                }
             }
             else if( buttons.lowButtonPushed() ){
                 _itemManager->reloadMagazine();

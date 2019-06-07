@@ -96,7 +96,9 @@ protected:
         return p;
     }
 
-    virtual bool isInView( const Corners& map_corn ){
+public:
+
+    virtual bool isInRegion( const Corners& map_corn ){
         //lUp
         if( _corn->lUp.x >= map_corn.lUp.x && _corn->lUp.x <= map_corn.rLow.x
                 && _corn->lUp.y >= map_corn.lUp.y && _corn->lUp.y <= map_corn.rLow.y )
@@ -124,9 +126,8 @@ protected:
         return false;
     }
 
-public:
     virtual void drawItem( uint16_t** view_cover, const Corners& map_corn ) {
-        if( isInView( map_corn )){
+        if( isInRegion( map_corn )){
             size_t x_img = 0;
             size_t y_img = 0;
             for(size_t y_abs = max( map_corn.lUp.y ,_corn->lUp.y); y_abs < min( map_corn.rLow.y, _corn->rLow.y); ++ y_abs ){

@@ -18,6 +18,8 @@
 #include "mapitem/mapitembase.h"
 #include "mapitem/viewitembase.h"
 
+#include "../util/uartlogger.h"
+
 extern const size_t map_size_x;
 extern const size_t map_size_y;
 extern const uint8_t DISPLAY_SIZE;
@@ -150,6 +152,32 @@ public:
             it = it->_next;
         }
         return false;
+    }
+
+    int getItemCount(){
+        return _dynamicItemList->_size;
+    }
+
+    int getCartridgeCount(){
+        return _magazine->_size;
+    }
+
+    int processShot(){
+        if( getCartridgeCount() > 0 ){
+            const Corners& crosshairCorners = _topLevelItem->getCorners();
+            List<MapItemBase>::elem* it = _dynamicItemList->_head;
+            while( it != nullptr ){
+                if( it->_data->isInRegion(crosshairCorners) ){
+                    UartLogger::getInstance().log("hit");
+                    _dynamicItemList->remove(it->_data);
+                    // return points
+                    return 1;
+                }
+                it = it->_next;
+            }
+        }
+        UartLogger::getInstance().log("no hit \n");
+        return 0;
     }
 
 };
