@@ -8,10 +8,13 @@
 #ifndef GRAPHIC_MAPITEMMANAGER_H_
 #define GRAPHIC_MAPITEMMANAGER_H_
 
+#include "../util/list.h"
+
+#include "mapitem/cartridge.h"
 #include "mapitem/crosshair.h"
 #include "mapitem/grousefly.h"
 #include "mapitem/grousefishing.h"
-#include "../util/list.h"
+
 #include "mapitem/mapitembase.h"
 #include "mapitem/viewitembase.h"
 
@@ -19,6 +22,7 @@ extern const size_t map_size_x;
 extern const size_t map_size_y;
 extern const uint8_t DISPLAY_SIZE;
 extern const uint16_t TRANSPARENT_COLOR;
+extern const uint8_t MAGAZINE_SIZE;
 
 class MapItemManager {
 
@@ -26,8 +30,9 @@ class MapItemManager {
 private:
 
     ViewItemBase* _topLevelItem;
+    List<ViewItemBase>* _magazine;
     uint16_t** _view_cover;
-    List<MapItemBase>* _itemList;
+    List<MapItemBase>* _dynamicItemList;
 
 public:
 
@@ -38,12 +43,12 @@ public:
             _view_cover[i] = new uint16_t[DISPLAY_SIZE];
         }
 
-        _itemList = new List<MapItemBase>;
+        _dynamicItemList = new List<MapItemBase>;
+        _magazine = new List<ViewItemBase>;
 
         //Test
-        _itemList->push_back( new GrouseFly() );
-        _itemList->push_back( new GrouseFishing() );
-
+        _dynamicItemList->push_back( new GrouseFly() );
+        _dynamicItemList->push_back( new GrouseFishing() );
 
     }
 
@@ -54,20 +59,21 @@ public:
             delete _view_cover[i];
         }
         delete _view_cover;
-        delete _itemList;
+        delete _dynamicItemList;
+        delete _magazine;
     }
 
 
     void updateItemPositions(){
         _topLevelItem->update_position();
-        List<MapItemBase>::elem* it = _itemList->_head;
+        List<MapItemBase>::elem* it = _dynamicItemList->_head;
         while(it != nullptr){
             it->_data->update_position();
             it = it->_next;
         }
         //Test:
-        if( _itemList->_size <= 4 ){
-            _itemList->push_back(new GrouseFly);
+        if( _dynamicItemList->_size <= 4 ){
+            _dynamicItemList->push_back(new GrouseFly);
         }
     }
 
@@ -78,11 +84,18 @@ public:
             }
         }
 
-        //backgrounditems
-        List<MapItemBase>::elem* it = _itemList->_head;
-        while(it != nullptr){
-            it->_data->drawItem(_view_cover, map_corn);
-            it = it->_next;
+        //dynamic items
+        List<MapItemBase>::elem* it_map = _dynamicItemList->_head;
+        while(it_map != nullptr){
+            it_map->_data->drawItem(_view_cover, map_corn);
+            it_map = it_map->_next;
+        }
+
+        //static items
+        List<ViewItemBase>::elem* it_view = _magazine->_head;
+        while(it_view != nullptr){
+            it_view->_data->drawItem(_view_cover );
+            it_view = it_view->_next;
         }
 
         //toplevelitems
@@ -90,10 +103,10 @@ public:
     }
 
     void deleteItemsOutOfMap(){
-        List<MapItemBase>::elem* it = _itemList->_head;
+        List<MapItemBase>::elem* it = _dynamicItemList->_head;
         while(it != nullptr){
             if( it->_data->outOfMap() ){
-                _itemList->remove(it->_data);
+                _dynamicItemList->remove(it->_data);
                 deleteItemsOutOfMap();
                 return;
             }
@@ -103,6 +116,40 @@ public:
 
     uint16_t** getCoverLayer(){
         return _view_cover;
+    }
+
+    // game controll
+    void deleteOneCartridge(){
+        if( _magazine->_size > 0 ){
+            _magazine->remove(_magazine->_tail->_data);
+        }
+    }
+
+    void reloadMagazine(){
+        while( _magazine->_size < MAGAZINE_SIZE ){
+            _magazine->push_back(new Cartridge(_magazine->_size));
+        }
+    }
+
+    void spawnGrouseFly(){
+        _dynamicItemList->push_back(new GrouseFly);
+    }
+
+    void spawnGrouseFishing(){
+        if(!hasActiveGrouseFishing()){
+            _dynamicItemList->push_back(new GrouseFishing);
+        }
+    }
+
+    bool hasActiveGrouseFishing(){
+        List<MapItemBase>::elem* it = _dynamicItemList->_head;
+        while(it != nullptr){
+            if( it->_data->getTypeId() == 4 ){
+                return true;
+            }
+            it = it->_next;
+        }
+        return false;
     }
 
 };

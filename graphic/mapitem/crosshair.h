@@ -13,7 +13,9 @@
 #include "viewitembase.h"
 
 extern const uint8_t DISPLAY_SIZE;
-extern const uint16_t TRANSPARENT_COLOR;
+
+extern const uint16_t crosshair_x;
+extern const uint16_t crosshair_y;
 extern const uint16_t image_crosshair[256];
 
 extern const uint8_t CROSSHAIR_START_X;
@@ -29,12 +31,13 @@ private:
 public:
 
     Crosshair( )
+    : ViewItemBase( crosshair_x, crosshair_y, image_crosshair, 1 )
     {
         _corn->lUp.x = CROSSHAIR_START_X;
         _corn->lUp.y = CROSSHAIR_START_Y;
 
-        _corn->rLow.x = _corn->lUp.x + 16;
-        _corn->rLow.y = _corn->lUp.y + 16;
+        _corn->rLow.x = _corn->lUp.x + crosshair_x;
+        _corn->rLow.y = _corn->lUp.y + crosshair_y;
 
         _joy = new Joystick();
 
@@ -112,24 +115,6 @@ private:
                 _corn->rLow.x += move;
             }
         }
-    }
-
-    void drawItem( uint16_t** view_cover ){
-
-        size_t x_img = 0;
-        size_t y_img = 0;
-        for( size_t y = _corn->lUp.y; y < _corn->rLow.y; ++y ){
-            for( size_t x = _corn->lUp.x; x < _corn->rLow.x; ++x ){
-                uint16_t color = image_crosshair[y_img * 16 + x_img];
-                if( color != TRANSPARENT_COLOR ){
-                    view_cover[y][x] = color;
-                }
-                ++x_img;
-            }
-            ++y_img;
-            x_img = 0;
-        }
-
     }
 
 };

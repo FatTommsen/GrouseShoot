@@ -7,16 +7,12 @@
 #include "msp.h"
 #include "game.h"
 
-#include "graphicmanager.h"
 
 int main(void)
 {
 
-    GraphicManager gm;
-
-    while(true){
-        gm.updateScreen();
-    }
+    Game game;
+    game.startGame();
 
 
     return 0;

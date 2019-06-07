@@ -34,7 +34,7 @@ protected:
 public:
 
     GrouseFly()
-    : MapItemBase(grouse_fly_x, grouse_fly_y, image_grouse_fly_up), _actImg(0), _imgCounter(0), _outOfMap(false)
+    : MapItemBase(grouse_fly_x, grouse_fly_y, image_grouse_fly_up, 3), _actImg(0), _imgCounter(0), _outOfMap(false)
     {
         _imgOrder[0] = &image_grouse_fly_up[0];
         _imgOrder[1] = &image_grouse_fly_mid[0];

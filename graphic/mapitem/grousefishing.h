@@ -23,7 +23,7 @@ class GrouseFishing : public MapItemBase{
 public:
 
     GrouseFishing()
-    : MapItemBase( grouse_fishing_x, grouse_fishing_y, image_grouse_fishing )
+    : MapItemBase( grouse_fishing_x, grouse_fishing_y, image_grouse_fishing, 4 )
     {
         _corn->lUp.x = GROUSE_FISHING_START_X;
         _corn->lUp.y = GROUSE_FISHING_START_Y;

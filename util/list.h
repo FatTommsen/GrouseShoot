@@ -8,6 +8,8 @@
 #ifndef UTIL_LIST_H_
 #define UTIL_LIST_H_
 
+#include <cstdio>
+
 template<typename T>
 class List{
 

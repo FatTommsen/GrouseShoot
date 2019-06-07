@@ -27,3 +27,5 @@ extern const uint8_t GROUSE_ANIMATION_SPEED = 2;
 
 extern const uint8_t SENSOR_TRIGGER_G = 400;
 extern const uint8_t SENSOR_TRIGGER_JOY = 200;
+
+extern const uint8_t MAGAZINE_SIZE = 6;

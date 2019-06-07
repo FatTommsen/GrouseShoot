@@ -21,8 +21,8 @@ public:
 
     virtual bool outOfMap() = 0;
 
-    MapItemBase( const uint16_t image_x, const uint16_t image_y, const uint16_t* image )
-    : _image_x(image_x), _image_y(image_y), _image(image), _img_reverse(false)
+    MapItemBase( const uint16_t image_x, const uint16_t image_y, const uint16_t* image, const uint16_t type_id )
+    : ItemBase( image_x, image_y, image, type_id ), _img_reverse(false)
     {
 
     }
@@ -31,11 +31,7 @@ public:
 
 protected:
 
-    const uint16_t _image_x;
-    const uint16_t _image_y;
-    const uint16_t* _image;
     bool _img_reverse;
-
 
     Point getRandomBorderPoint(){
         Point p;

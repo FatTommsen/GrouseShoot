@@ -18,14 +18,15 @@ class GraphicManager{
 private:
 
     Map* _map;
-    MapItemManager* _itemManager;
+    MapItemManager& _itemManager;
     Display* _display;
 
 public:
 
-    GraphicManager(){
+    GraphicManager( MapItemManager& itemManager )
+    : _itemManager(itemManager)
+    {
         _map = new Map;
-        _itemManager = new MapItemManager;
         _display = new Display;
     }
 
@@ -33,21 +34,20 @@ public:
 
     ~GraphicManager(){
         delete _map;
-        delete _itemManager;
         delete _display;
     }
 
     //main graphic method
     void updateScreen(){
         _map->update();
-        _itemManager->updateItemPositions();
-        _itemManager->updateViewCover( _map->getCorners() );
+        _itemManager.updateItemPositions();
+        _itemManager.updateViewCover( _map->getCorners() );
 
         uint16_t** map_view = _map->getCurrentView();
-        uint16_t** view_cover = _itemManager->getCoverLayer();
+        uint16_t** view_cover = _itemManager.getCoverLayer();
 
         _display->drawTwoLayer( (const void**)map_view, (const void**)view_cover );
-        _itemManager->deleteItemsOutOfMap();
+        _itemManager.deleteItemsOutOfMap();
     }
 
 };
