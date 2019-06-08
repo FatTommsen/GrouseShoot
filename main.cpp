@@ -7,13 +7,10 @@
 #include "msp.h"
 #include "game.h"
 
-
 int main(void)
 {
-
     Game game;
     game.startGame();
-
 
     return 0;
 }

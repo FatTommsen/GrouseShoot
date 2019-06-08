@@ -50,7 +50,7 @@ protected:
         }
         else{
             p.x = dmap_size_x;
-            p.y = index - dmap_size_y * 0.5 - dmap_size_x;
+            p.y = index - (dmap_size_y * 0.5) - dmap_size_x;
         }
 
         return p;
@@ -135,7 +135,7 @@ public:
                     y_img = y_abs - _corn->lUp.y;
                     x_img = x_abs - _corn->lUp.x;
                     if( _img_reverse ){
-                        x_img = _image_x - x_img;
+                        x_img = _image_x -1 - x_img;
                     }
                     view_cover[y_abs - map_corn.lUp.y][x_abs - map_corn.lUp.x] = _image[ y_img * _image_x + x_img];
                 }

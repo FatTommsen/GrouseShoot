@@ -11,6 +11,7 @@
  * 2 = Cartridge
  * 3 = GrouseFly
  * 4 = GrouseFishing
+ * 5 = GrouseRun
  */
 
 

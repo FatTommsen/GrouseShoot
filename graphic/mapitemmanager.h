@@ -14,14 +14,15 @@
 #include "mapitem/crosshair.h"
 #include "mapitem/grousefly.h"
 #include "mapitem/grousefishing.h"
+#include "mapitem/grouserun.h"
 
 #include "mapitem/mapitembase.h"
 #include "mapitem/viewitembase.h"
 
 #include "../util/uartlogger.h"
 
-extern const size_t map_size_x;
-extern const size_t map_size_y;
+extern const unsigned int map_size_x;
+extern const unsigned int map_size_y;
 extern const uint8_t DISPLAY_SIZE;
 extern const uint16_t TRANSPARENT_COLOR;
 extern const uint8_t MAGAZINE_SIZE;
@@ -50,7 +51,8 @@ public:
 
         //Test
         _dynamicItemList->push_back( new GrouseFly() );
-        _dynamicItemList->push_back( new GrouseFishing() );
+        //_dynamicItemList->push_back( new GrouseFishing() );
+        _dynamicItemList->push_back( new GrouseRun() );
 
     }
 

@@ -44,7 +44,7 @@ public:
     }
 
     double next(){
-        _seed = ( 5 * _seed + 1237) % 1237;
+        _seed = ( 3 * _seed + 1237) % 1237;
         double random = ((double)_seed) / 1237.;
         return random;
     }

@@ -19,11 +19,11 @@ extern uint16_t image_grouse_fly_mid[240];
 extern uint16_t image_grouse_fly_low[240];
 
 extern const uint8_t GROUSE_FLY_SPEED;
-extern const uint8_t GROUSE_ANIMATION_SPEED;
+extern const uint8_t GROUSEFLY_ANIMATION_SPEED;
 
 class GrouseFly : public MapItemBase{
 
-protected:
+private:
 
     size_t _actImg;
     int _imgCounter;
@@ -44,7 +44,7 @@ public:
         Point start = getRandomBorderPoint();
 
         _corn->lUp.x = start.x;
-        _corn->lUp.y = start.x;
+        _corn->lUp.y = start.y;
 
         _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
         _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
@@ -69,7 +69,7 @@ public:
         }
 
 
-        if( _imgCounter < GROUSE_ANIMATION_SPEED){
+        if( _imgCounter < GROUSEFLY_ANIMATION_SPEED){
             ++_imgCounter;
         }
         else{
@@ -105,10 +105,10 @@ private:
         }
         else{
             //right to left
-            if( _corn->lUp.x - _path->x > GROUSE_FLY_SPEED ){
-                double m = (double)(_corn->lUp.y - _path->y) / (double)(_corn->lUp.x - _path->x);
+            if( _corn->rLow.x - _path->x > GROUSE_FLY_SPEED ){
+                double m = (double)(_corn->lUp.y - _path->y) / (double)(_corn->rLow.x - _path->x);
                 _corn->lUp.x -= GROUSE_FLY_SPEED;
-                _corn->lUp.y += round( m * (double)GROUSE_FLY_SPEED );
+                _corn->lUp.y -= round( m * (double)GROUSE_FLY_SPEED );
             }
             else{
                 //item out of map
