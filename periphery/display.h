@@ -13,8 +13,6 @@
 #include "st7735s_drv.h"
 #include "../custom_yahal/uGUI_2layer.h"
 
-extern const uint16_t TRANSPARENT_COLOR;
-
 class Display {
 
 private:

@@ -10,8 +10,6 @@
 
 #include "itembase.h"
 
-extern const uint16_t TRANSPARENT_COLOR;
-
 class ViewItemBase : public ItemBase{
 
 public:

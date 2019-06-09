@@ -14,7 +14,11 @@
  * 5 = GrouseRun
  */
 
-
+#define TypeIdCrosshair     1
+#define TypeIdCartridge     2
+#define TypeIdGrouseFly     3
+#define TypeIdGrouseFishing 4
+#define TypeIdGrouseRun     5
 
 #ifndef GRAPHIC_INTERFACEMAPITEM_H_
 #define GRAPHIC_INTERFACEMAPITEM_H_

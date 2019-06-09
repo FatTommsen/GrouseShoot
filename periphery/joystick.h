@@ -10,8 +10,6 @@
 
 #include "adc14_msp432.h"
 
-extern const uint8_t SENSOR_TRIGGER_JOY;
-
 class Joystick{
 
 private:

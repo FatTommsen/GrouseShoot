@@ -23,36 +23,38 @@
 
 extern const unsigned int map_size_x;
 extern const unsigned int map_size_y;
-extern const uint8_t DISPLAY_SIZE;
-extern const uint16_t TRANSPARENT_COLOR;
-extern const uint8_t MAGAZINE_SIZE;
 
 class MapItemManager {
 
 
 private:
 
+    uint16_t** _view_cover;
     ViewItemBase* _topLevelItem;
     List<ViewItemBase>* _magazine;
-    uint16_t** _view_cover;
-    List<MapItemBase>* _dynamicItemList;
+    List<MapItemBase>* _itemList;
+    MapItemBase* _singleItem;
 
+
+    const Corners* _mapCorners;
 public:
 
-    MapItemManager() {
+    MapItemManager()
+    : _singleItem(nullptr)
+    {
         _topLevelItem = new Crosshair;
         _view_cover = new uint16_t*[DISPLAY_SIZE];
         for( size_t i = 0; i < DISPLAY_SIZE; ++i ){
             _view_cover[i] = new uint16_t[DISPLAY_SIZE];
         }
 
-        _dynamicItemList = new List<MapItemBase>;
+        _itemList = new List<MapItemBase>;
         _magazine = new List<ViewItemBase>;
 
         //Test
-        _dynamicItemList->push_back( new GrouseFly() );
-        //_dynamicItemList->push_back( new GrouseFishing() );
-        _dynamicItemList->push_back( new GrouseRun() );
+        _itemList->push_back( new GrouseFly() );
+        _itemList->push_back( new GrouseFishing() );
+        _itemList->push_back( new GrouseRun() );
 
     }
 
@@ -63,25 +65,31 @@ public:
             delete _view_cover[i];
         }
         delete _view_cover;
-        delete _dynamicItemList;
+        delete _itemList;
         delete _magazine;
+        if(_singleItem){
+            delete _singleItem;
+        }
     }
 
 
     void updateItemPositions(){
         _topLevelItem->update_position();
-        List<MapItemBase>::elem* it = _dynamicItemList->_head;
+        List<MapItemBase>::elem* it = _itemList->_head;
         while(it != nullptr){
             it->_data->update_position();
             it = it->_next;
         }
         //Test:
-        if( _dynamicItemList->_size <= 4 ){
-            _dynamicItemList->push_back(new GrouseFly);
+        if( _itemList->_size <= 4 ){
+            _itemList->push_back(new GrouseFly);
+        }
+        if( !hasActiveGrouseRun() ){
+            _itemList->push_back(new GrouseRun);
         }
     }
 
-    void updateViewCover( const Corners& map_corn ){
+    void updateViewCover(){
         for(size_t x = 0; x < DISPLAY_SIZE; ++x ){
             for(size_t y = 0; y < DISPLAY_SIZE; ++y ){
                 _view_cover[x][y] = TRANSPARENT_COLOR;
@@ -89,10 +97,14 @@ public:
         }
 
         //dynamic items
-        List<MapItemBase>::elem* it_map = _dynamicItemList->_head;
+        List<MapItemBase>::elem* it_map = _itemList->_head;
         while(it_map != nullptr){
-            it_map->_data->drawItem(_view_cover, map_corn);
+            it_map->_data->drawItem(_view_cover, *_mapCorners);
             it_map = it_map->_next;
+        }
+
+        if( _singleItem ){
+            _singleItem->drawItem(_view_cover, *_mapCorners);
         }
 
         //static items
@@ -107,10 +119,10 @@ public:
     }
 
     void deleteItemsOutOfMap(){
-        List<MapItemBase>::elem* it = _dynamicItemList->_head;
+        List<MapItemBase>::elem* it = _itemList->_head;
         while(it != nullptr){
             if( it->_data->outOfMap() ){
-                _dynamicItemList->remove(it->_data);
+                _itemList->remove(it->_data);
                 deleteItemsOutOfMap();
                 return;
             }
@@ -136,28 +148,25 @@ public:
     }
 
     void spawnGrouseFly(){
-        _dynamicItemList->push_back(new GrouseFly);
+        _itemList->push_back(new GrouseFly);
     }
 
     void spawnGrouseFishing(){
-        if(!hasActiveGrouseFishing()){
-            _dynamicItemList->push_back(new GrouseFishing);
+        if(!_singleItem){
+            _singleItem = new GrouseFishing();
         }
     }
 
     bool hasActiveGrouseFishing(){
-        List<MapItemBase>::elem* it = _dynamicItemList->_head;
-        while(it != nullptr){
-            if( it->_data->getTypeId() == 4 ){
-                return true;
-            }
-            it = it->_next;
-        }
-        return false;
+        return _singleItem == nullptr;
+    }
+
+    bool hasActiveGrouseRun(){
+        return getTypeCount( TypeIdGrouseRun );
     }
 
     int getItemCount(){
-        return _dynamicItemList->_size;
+        return _itemList->_size;
     }
 
     int getCartridgeCount(){
@@ -167,25 +176,50 @@ public:
     int processShot(){
         if( getCartridgeCount() > 0 ){
             const Corners& crosshairCorners = _topLevelItem->getCorners();
-            List<MapItemBase>::elem* it = _dynamicItemList->_head;
+            Point p;
+            p.x = ((double)( crosshairCorners.rLow.x - crosshairCorners.lUp.x ) / 2 ) + _mapCorners->lUp.x + crosshairCorners.lUp.x;
+            p.y = ((double)( crosshairCorners.rLow.y - crosshairCorners.lUp.y ) / 2 ) + _mapCorners->lUp.y + crosshairCorners.lUp.y;
+
+            if(_singleItem != nullptr ){
+                if( _singleItem->gotHit(p)){
+                    delete _singleItem;
+                    _singleItem = nullptr;
+                    return 1;
+                }
+            }
+
+            List<MapItemBase>::elem* it = _itemList->_head;
             while( it != nullptr ){
-                if( it->_data->isInRegion(crosshairCorners) ){
-                    UartLogger::getInstance().log("hit");
-                    _dynamicItemList->remove(it->_data);
+                if( it->_data->gotHit(p) ){
+                    _itemList->remove(it->_data);
                     // return points
                     return 1;
                 }
                 it = it->_next;
             }
         }
-        UartLogger::getInstance().log("no hit \n");
         return 0;
     }
 
+    void registerMapCorners( const Corners& corn ){
+        _mapCorners = &corn;
+    }
+
+
+private:
+
+    int getTypeCount( int typeId ){
+        int ret = 0;
+        List<MapItemBase>::elem* it = _itemList->_head;
+        while( it != nullptr ){
+            if( it->_data->getTypeId() == typeId ){
+                ++ret;
+            }
+            it = it->_next;
+        }
+        return ret;
+    }
+
+
 };
-
-
-
-
-
 #endif /* GRAPHIC_MAPITEMMANAGER_H_ */

@@ -15,15 +15,12 @@ extern const uint16_t grouse_fishing_x;
 extern const uint16_t grouse_fishing_y;
 extern const uint16_t image_grouse_fishing[1400];
 
-extern const uint8_t GROUSE_FISHING_START_X;
-extern const uint8_t GROUSE_FISHING_START_Y;
-
 class GrouseFishing : public MapItemBase{
 
 public:
 
     GrouseFishing()
-    : MapItemBase( grouse_fishing_x, grouse_fishing_y, image_grouse_fishing, 4 )
+    : MapItemBase( grouse_fishing_x, grouse_fishing_y, image_grouse_fishing, TypeIdGrouseFishing )
     {
         _corn->lUp.x = GROUSE_FISHING_START_X;
         _corn->lUp.y = GROUSE_FISHING_START_Y;

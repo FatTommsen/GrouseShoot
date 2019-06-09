@@ -11,11 +11,6 @@
 #include "util/util.h"
 #include "../periphery/gsensor.h"
 
-extern const uint8_t DISPLAY_SIZE;
-extern const uint8_t MAP_START_X;
-extern const uint8_t MAP_START_Y;
-extern const uint8_t MAP_SCROLL_SPEED;
-
 extern const size_t map_size_x;
 extern const size_t map_size_y;
 extern uint16_t image_map[82944];

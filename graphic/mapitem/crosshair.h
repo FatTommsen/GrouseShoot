@@ -12,15 +12,9 @@
 #include "../../util/util.h"
 #include "viewitembase.h"
 
-extern const uint8_t DISPLAY_SIZE;
-
 extern const uint16_t crosshair_x;
 extern const uint16_t crosshair_y;
 extern const uint16_t image_crosshair[256];
-
-extern const uint8_t CROSSHAIR_START_X;
-extern const uint8_t CROSSHAIR_START_Y;
-extern const uint8_t CROSSHAIR_SCROLL_SPEED;
 
 
 class Crosshair : public ViewItemBase{
@@ -31,7 +25,7 @@ private:
 public:
 
     Crosshair( )
-    : ViewItemBase( crosshair_x, crosshair_y, image_crosshair, 1 )
+    : ViewItemBase( crosshair_x, crosshair_y, image_crosshair, TypeIdCrosshair )
     {
         _corn->lUp.x = CROSSHAIR_START_X;
         _corn->lUp.y = CROSSHAIR_START_Y;
@@ -76,7 +70,7 @@ private:
             }
         }
         else{
-            if( _corn->rLow.y >= DISPLAY_SIZE - 1 ){
+            if( _corn->rLow.y >= (size_t)DISPLAY_SIZE - 1 ){
                 //already in button row
                 return;
             }
@@ -105,7 +99,7 @@ private:
             }
         }
         else{
-            if( _corn->rLow.x >= DISPLAY_SIZE - 1 ){
+            if( _corn->rLow.x >= (size_t)DISPLAY_SIZE - 1 ){
                 //already in very right col
                 return;
             }

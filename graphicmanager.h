@@ -28,6 +28,7 @@ public:
     {
         _map = new Map;
         _display = new Display;
+        _itemManager.registerMapCorners( _map->getCorners() );
     }
 
 
@@ -41,7 +42,7 @@ public:
     void updateScreen(){
         _map->update();
         _itemManager.updateItemPositions();
-        _itemManager.updateViewCover( _map->getCorners() );
+        _itemManager.updateViewCover();
 
         uint16_t** map_view = _map->getCurrentView();
         uint16_t** view_cover = _itemManager.getCoverLayer();

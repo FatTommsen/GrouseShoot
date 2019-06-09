@@ -10,8 +10,6 @@
 
 #include "viewitembase.h"
 
-extern const uint8_t DISPLAY_SIZE;
-
 extern const uint8_t cartridge_x;
 extern const uint8_t cartridge_y;
 extern const uint16_t image_cartridge[144];
@@ -24,7 +22,7 @@ private:
 public:
 
     Cartridge( uint8_t offset )
-    : ViewItemBase( cartridge_x, cartridge_y, image_cartridge, 2 )
+    : ViewItemBase( cartridge_x, cartridge_y, image_cartridge, TypeIdCartridge )
     {
         _corn->lUp.y = DISPLAY_SIZE - (cartridge_y + 3);
         _corn->lUp.x = DISPLAY_SIZE - cartridge_x - offset * ( cartridge_x - 1 ) - 2;

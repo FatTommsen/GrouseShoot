@@ -11,8 +11,6 @@
 #include "adc14_msp432.h"
 #include "gpio_msp432.h"
 
-extern const uint16_t SENSOR_TRIGGER_G;
-
 class GSensor {
 
 private:

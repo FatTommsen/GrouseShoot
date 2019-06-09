@@ -98,7 +98,7 @@ protected:
 
 public:
 
-    virtual bool isInRegion( const Corners& map_corn ){
+    virtual bool isInView( const Corners& map_corn ){
         //lUp
         if( _corn->lUp.x >= map_corn.lUp.x && _corn->lUp.x <= map_corn.rLow.x
                 && _corn->lUp.y >= map_corn.lUp.y && _corn->lUp.y <= map_corn.rLow.y )
@@ -127,7 +127,7 @@ public:
     }
 
     virtual void drawItem( uint16_t** view_cover, const Corners& map_corn ) {
-        if( isInRegion( map_corn )){
+        if( isInView( map_corn )){
             size_t x_img = 0;
             size_t y_img = 0;
             for(size_t y_abs = max( map_corn.lUp.y ,_corn->lUp.y); y_abs < min( map_corn.rLow.y, _corn->rLow.y); ++ y_abs ){
@@ -137,10 +137,21 @@ public:
                     if( _img_reverse ){
                         x_img = _image_x -1 - x_img;
                     }
-                    view_cover[y_abs - map_corn.lUp.y][x_abs - map_corn.lUp.x] = _image[ y_img * _image_x + x_img];
+                    if(_image[ y_img * _image_x + x_img] != TRANSPARENT_COLOR){
+                        view_cover[y_abs - map_corn.lUp.y][x_abs - map_corn.lUp.x] = _image[ y_img * _image_x + x_img];
+                    }
                 }
             }
         }
+    }
+
+public:
+
+    bool gotHit( const Point& p ){
+        if( _corn->lUp.x <= p.x && _corn->rLow.x >= p.x && _corn->lUp.y <= p.y && _corn->rLow.y >= p.y ){
+            return true;
+        }
+        return false;
     }
 
 };
