@@ -19,6 +19,7 @@ extern const uint16_t image_grouserun_2[644];
 extern const uint16_t image_grouserun_3[644];
 extern const uint16_t image_grouserun_4[644];
 extern const uint16_t image_grouserun_5[644];
+extern const uint16_t image_grouserun_points[644];
 
 class GrouseRun : public MapItemBase{
 
@@ -29,14 +30,13 @@ private:
     const uint16_t* _imgOrder[5];
     Point * _path;
     size_t _moveCounter;
-    bool _outOfMap;
     bool _leftTop;
 
 
 public:
 
     GrouseRun()
-    : MapItemBase(grouserun_x, grouserun_y, image_grouserun_1, TypeIdGrouseRun), _actImg(0), _imgCounter(0), _moveCounter(0), _outOfMap(false)
+    : MapItemBase(grouserun_x, grouserun_y, image_grouserun_1, TypeIdGrouseRun, image_grouserun_points), _actImg(0), _imgCounter(0), _moveCounter(0)
     {
         _imgOrder[0] = &image_grouserun_1[0];
         _imgOrder[1] = &image_grouserun_2[0];
@@ -95,22 +95,34 @@ public:
     }
 
     virtual void update_position() override{
+        if(_alive){
+            if( _path != nullptr ){
+               move();
+            }
 
-        if( _path != nullptr ){
-           move();
-        }
 
-
-        if( _imgCounter < GROUSERUN_ANIMATION_SPEED){
-            ++_imgCounter;
+            if( _imgCounter < GROUSERUN_ANIMATION_SPEED){
+                ++_imgCounter;
+            }
+            else{
+                _imgCounter = 0;
+                ++_actImg;
+                if( _actImg > 4 ){
+                    _actImg = 0;
+                }
+                _image = _imgOrder[_actImg];
+            }
         }
         else{
-            _imgCounter = 0;
-            ++_actImg;
-            if( _actImg > 4 ){
-                _actImg = 0;
+            _img_reverse = false;
+            if(_pointCounter < 7){
+                ++_pointCounter;
+                _corn->lUp.y -= 1;
+                _corn->rLow.y -= 1;
             }
-            _image = _imgOrder[_actImg];
+            else{
+                _outOfMap = true;
+            }
         }
 
     }

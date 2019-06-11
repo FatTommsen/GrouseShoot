@@ -13,22 +13,40 @@
 class Timer{
 
 private:
-    bool param;
-
-    static void setTrue( void * arg ){
-        (*static_cast<bool *>(arg)) = true;
-    }
+    bool _param;
 
 public:
+
+    static void setTrue( void * arg ){
+        bool* b = (static_cast<bool *>(arg));
+        *b = true;
+    }
+
+    static void setFalse( void * arg ){
+        bool* b = (static_cast<bool *>(arg));
+        *b = false;
+    }
+
+
     void delay( unsigned int us ){
-        param = false;
+        _param = false;
         timer_msp432 timer2(TIMER32_2);
         timer2.setPeriod(us, TIMER::ONE_SHOT);
-        timer2.setCallback( Timer::setTrue, &param);
+        timer2.setCallback( Timer::setTrue, &_param);
         timer2.start();
 
-        while(!param) ;
+        while(!_param) ;
     }
+
+    void startGame( unsigned int s, bool* param ){
+        *param = false;
+        timer_msp432 timer2(TIMER32_2);
+        uint32_t period = 1000000 * s;
+        timer2.setPeriod(period, TIMER::ONE_SHOT);
+        timer2.setCallback( Timer::setTrue, param );
+        timer2.start();
+    }
+
 
 };
 

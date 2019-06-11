@@ -64,6 +64,11 @@ public:
         _gui->DrawBMP_2layer(0, 0, _bmp_map);
     }
 
+    void drawOneLayer( const void** view ){
+        _bmp_map->background = view;
+        _gui->DrawBMP_2layer(0, 0, _bmp_map);
+    }
+
 };
 
 

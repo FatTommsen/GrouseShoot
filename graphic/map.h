@@ -30,13 +30,7 @@ public:
         _view = new uint16_t*[DISPLAY_SIZE];
         _corn = new Corners;
 
-        _corn->lUp.x = MAP_START_X;
-        _corn->lUp.y = MAP_START_Y;
-
-        _corn->rLow.x = _corn->lUp.x + DISPLAY_SIZE;
-        _corn->rLow.y = _corn->lUp.y + DISPLAY_SIZE;
-
-        updateView();
+        reset();
 
         _gSen = new GSensor();
 
@@ -50,6 +44,16 @@ public:
 
     uint16_t** getCurrentView(){
         return _view;
+    }
+
+    void reset(){
+        _corn->lUp.x = MAP_START_X;
+        _corn->lUp.y = MAP_START_Y;
+
+        _corn->rLow.x = _corn->lUp.x + DISPLAY_SIZE;
+        _corn->rLow.y = _corn->lUp.y + DISPLAY_SIZE;
+
+        updateView();
     }
 
     void update() {

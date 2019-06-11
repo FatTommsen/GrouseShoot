@@ -17,6 +17,7 @@ extern uint16_t grouse_fly_y;
 extern uint16_t image_grouse_fly_up[240];
 extern uint16_t image_grouse_fly_mid[240];
 extern uint16_t image_grouse_fly_low[240];
+extern uint16_t image_grouse_fly_points[240];
 
 
 class GrouseFly : public MapItemBase{
@@ -27,12 +28,11 @@ private:
     int _imgCounter;
     const uint16_t* _imgOrder[4];
     Point * _path;
-    bool _outOfMap;
 
 public:
 
     GrouseFly()
-    : MapItemBase(grouse_fly_x, grouse_fly_y, image_grouse_fly_up, TypeIdGrouseFly), _actImg(0), _imgCounter(0), _outOfMap(false)
+    : MapItemBase(grouse_fly_x, grouse_fly_y, image_grouse_fly_up, TypeIdGrouseFly, image_grouse_fly_points), _actImg(0), _imgCounter(0)
     {
         _imgOrder[0] = &image_grouse_fly_up[0];
         _imgOrder[1] = &image_grouse_fly_mid[0];
@@ -61,22 +61,34 @@ public:
     }
 
     virtual void update_position() override{
+        if( _alive ){
+            if( _path != nullptr ){
+               move();
+            }
 
-        if( _path != nullptr ){
-           move();
-        }
 
-
-        if( _imgCounter < GROUSEFLY_ANIMATION_SPEED){
-            ++_imgCounter;
+            if( _imgCounter < GROUSEFLY_ANIMATION_SPEED){
+                ++_imgCounter;
+            }
+            else{
+                _imgCounter = 0;
+                ++_actImg;
+                if( _actImg > 3 ){
+                    _actImg = 0;
+                }
+                _image = _imgOrder[_actImg];
+            }
         }
         else{
-            _imgCounter = 0;
-            ++_actImg;
-            if( _actImg > 3 ){
-                _actImg = 0;
+            _img_reverse = false;
+            if(_pointCounter < 7){
+                ++_pointCounter;
+                _corn->lUp.y -= 1;
+                _corn->rLow.y -= 1;
             }
-            _image = _imgOrder[_actImg];
+            else{
+                _outOfMap = true;
+            }
         }
 
     }
@@ -113,6 +125,7 @@ private:
                 _outOfMap = true;
             }
         }
+
         _corn->rLow.x = _corn->lUp.x + grouse_fly_x;
         _corn->rLow.y = _corn->lUp.y + grouse_fly_y;
     }

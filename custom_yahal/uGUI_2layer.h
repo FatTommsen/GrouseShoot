@@ -42,9 +42,15 @@ public:
         if ((bmp->bpp != BMP_BPP_16) || (bmp->colors != BMP_RGB565))
             return;
 
-        pixel_stream_2layer ps((const uint16_t**) bmp->background, (const uint16_t**) bmp->cover, bmp->_screen_size, bmp->trans_color );
+        if( bmp->cover == nullptr ){
+            pixel_stream_2layer ps((const uint16_t**) bmp->background, bmp->_screen_size, bmp->trans_color );
+            _lcd.drawArea(xp, yp, xp + bmp->_screen_size - 1, yp + bmp->_screen_size - 1, ps);
+        }
+        else{
+            pixel_stream_2layer ps((const uint16_t**) bmp->background, (const uint16_t**) bmp->cover, bmp->_screen_size, bmp->trans_color );
+            _lcd.drawArea(xp, yp, xp + bmp->_screen_size - 1, yp + bmp->_screen_size - 1, ps);
+        }
 
-        _lcd.drawArea(xp, yp, xp + bmp->_screen_size - 1, yp + bmp->_screen_size - 1, ps);
     }
 
 };

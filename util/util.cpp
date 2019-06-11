@@ -11,7 +11,7 @@
 
 UartLogger* UartLogger::instance = nullptr;
 Random* Random::instance = nullptr;
-
+bool _inGame = false;
 
 
 

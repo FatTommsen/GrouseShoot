@@ -14,11 +14,20 @@
  * 5 = GrouseRun
  */
 
-#define TypeIdCrosshair     1
-#define TypeIdCartridge     2
-#define TypeIdGrouseFly     3
-#define TypeIdGrouseFishing 4
-#define TypeIdGrouseRun     5
+#define TypeIdCrosshair             1
+#define TypeIdCartridge             2
+#define TypeIdGrouseFly             3
+#define TypeIdGrouseFishing         4
+#define TypeIdGrouseRun             5
+#define TypeIdGrouseStart           6
+#define TypeIdMenuEntryStart        7
+#define TypeIdMenuEntrySettings     8
+#define TypeIdMenuEntryHighscore    9
+#define TypeIdMenuEntryAutoreload   10
+#define TypeIdMenuEntryOk           11
+#define TypeIdMenuEntryCheckbox     12
+#define TypeIdMenuEntryNavigation   13
+#define TypeIdMenuEntryCrosshair    14
 
 #ifndef GRAPHIC_INTERFACEMAPITEM_H_
 #define GRAPHIC_INTERFACEMAPITEM_H_

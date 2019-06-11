@@ -20,6 +20,12 @@ public:
 
     }
 
+    pixel_stream_2layer( const uint16_t **data, size_t screen_size, uint16_t trans_color )
+    : pixel_stream_rgb565(nullptr, 0), _data(data), _data_cover(nullptr), _screen_size(screen_size), _index(0), _trans_color(trans_color)
+    {
+
+    }
+
     virtual ~pixel_stream_2layer() { }
 
     inline color_t getNext() override {
@@ -28,7 +34,7 @@ public:
         size_t x = (_index) % _screen_size;
         ++_index;
 
-        if( _data_cover[y][x] != _trans_color ){
+        if( _data_cover != nullptr && _data_cover[y][x] != _trans_color ){
             return _data_cover[y][x] | LCD::COLORTYPE_RGB565;
         }
 

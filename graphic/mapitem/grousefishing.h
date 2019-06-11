@@ -14,13 +14,14 @@
 extern const uint16_t grouse_fishing_x;
 extern const uint16_t grouse_fishing_y;
 extern const uint16_t image_grouse_fishing[1400];
+extern const uint16_t image_grouse_fishing_points[1400];
 
 class GrouseFishing : public MapItemBase{
 
 public:
 
     GrouseFishing()
-    : MapItemBase( grouse_fishing_x, grouse_fishing_y, image_grouse_fishing, TypeIdGrouseFishing )
+    : MapItemBase( grouse_fishing_x, grouse_fishing_y, image_grouse_fishing, TypeIdGrouseFishing, image_grouse_fishing_points )
     {
         _corn->lUp.x = GROUSE_FISHING_START_X;
         _corn->lUp.y = GROUSE_FISHING_START_Y;
@@ -36,12 +37,22 @@ public:
 
     virtual void update_position() override{
         //fishing grouse can not be moved
+        if(!_alive){
+            if(_pointCounter < 7){
+                ++_pointCounter;
+                _corn->lUp.y -= 1;
+                _corn->rLow.y -= 1;
+            }
+            else{
+                _outOfMap = true;
+            }
+        }
         return;
     }
 
     virtual bool outOfMap() override{
         //fishing grouse can no be out of map
-        return false;
+        return _outOfMap;
     }
 
 };

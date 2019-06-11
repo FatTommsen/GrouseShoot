@@ -21,8 +21,8 @@ public:
 
     virtual bool outOfMap() = 0;
 
-    MapItemBase( const uint16_t image_x, const uint16_t image_y, const uint16_t* image, const uint16_t type_id )
-    : ItemBase( image_x, image_y, image, type_id ), _img_reverse(false)
+    MapItemBase( const uint16_t image_x, const uint16_t image_y, const uint16_t* image, const uint16_t type_id, const uint16_t* points )
+    : ItemBase( image_x, image_y, image, type_id ), _img_reverse(false), _alive(true), _pointCounter(0), _imagePoints(points), _outOfMap(false)
     {
 
     }
@@ -32,6 +32,10 @@ public:
 protected:
 
     bool _img_reverse;
+    bool _alive;
+    uint8_t _pointCounter;
+    const uint16_t* _imagePoints;
+    bool _outOfMap;
 
     Point getRandomBorderPoint(){
         Point p;
@@ -149,6 +153,8 @@ public:
 
     bool gotHit( const Point& p ){
         if( _corn->lUp.x <= p.x && _corn->rLow.x >= p.x && _corn->lUp.y <= p.y && _corn->rLow.y >= p.y ){
+            _alive = false;
+            _image = _imagePoints;
             return true;
         }
         return false;

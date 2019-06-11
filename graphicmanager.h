@@ -42,13 +42,24 @@ public:
     void updateScreen(){
         _map->update();
         _itemManager.updateItemPositions();
-        _itemManager.updateViewCover();
+        _itemManager.updateViewCover(TRANSPARENT_COLOR);
 
         uint16_t** map_view = _map->getCurrentView();
         uint16_t** view_cover = _itemManager.getCoverLayer();
 
         _display->drawTwoLayer( (const void**)map_view, (const void**)view_cover );
         _itemManager.deleteItemsOutOfMap();
+    }
+
+    void updateMenuScreen(){
+        _itemManager.updateItemPositions();
+        _itemManager.updateViewCover(MENU_BACKGROUND_COLOR);
+        uint16_t** menu_view = _itemManager.getCoverLayer();
+        _display->drawOneLayer((const void**)menu_view);
+    }
+
+    void resetMap(){
+        _map->reset();
     }
 
 };

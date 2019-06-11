@@ -15,9 +15,13 @@
 #include "mapitem/grousefly.h"
 #include "mapitem/grousefishing.h"
 #include "mapitem/grouserun.h"
+#include "mapitem/grousestart.h"
+#include "mapitem/menuentry.h"
+#include "mapitem/checkbox.h"
 
 #include "mapitem/mapitembase.h"
 #include "mapitem/viewitembase.h"
+#include "mapitem/menuitembase.h"
 
 #include "../util/uartlogger.h"
 
@@ -34,6 +38,7 @@ private:
     List<ViewItemBase>* _magazine;
     List<MapItemBase>* _itemList;
     MapItemBase* _singleItem;
+    List<MenuItemBase>* _menuItems;
 
 
     const Corners* _mapCorners;
@@ -50,12 +55,9 @@ public:
 
         _itemList = new List<MapItemBase>;
         _magazine = new List<ViewItemBase>;
+        _menuItems = new List<MenuItemBase>;
 
-        //Test
-        _itemList->push_back( new GrouseFly() );
-        _itemList->push_back( new GrouseFishing() );
-        _itemList->push_back( new GrouseRun() );
-
+        //_itemList->push_back(new GrouseFishing);
     }
 
 
@@ -75,24 +77,34 @@ public:
 
     void updateItemPositions(){
         _topLevelItem->update_position();
-        List<MapItemBase>::elem* it = _itemList->_head;
-        while(it != nullptr){
-            it->_data->update_position();
-            it = it->_next;
+
+        List<MapItemBase>::elem* itMapItem = _itemList->_head;
+        while(itMapItem != nullptr){
+            itMapItem->_data->update_position();
+            itMapItem = itMapItem->_next;
         }
-        //Test:
-        if( _itemList->_size <= 4 ){
-            _itemList->push_back(new GrouseFly);
+
+        Point p;
+        const Corners& crosshairCorners = _topLevelItem->getCorners();
+        p.x = crosshairCorners.lUp.x + 8;
+        p.y = crosshairCorners.lUp.y + 8;
+        List<MenuItemBase>::elem* itMenuItem = _menuItems->_head;
+        while( itMenuItem != nullptr ){
+            itMenuItem->_data->update_position(p);
+            itMenuItem = itMenuItem->_next;
         }
-        if( !hasActiveGrouseRun() ){
-            _itemList->push_back(new GrouseRun);
-        }
+
+//        while( _itemList->_size < 4  ){
+//            _itemList->push_back(new GrouseFly);
+//            _itemList->push_back(new GrouseRun);
+//        }
+
     }
 
-    void updateViewCover(){
+    void updateViewCover( uint16_t backgroundColor ){
         for(size_t x = 0; x < DISPLAY_SIZE; ++x ){
             for(size_t y = 0; y < DISPLAY_SIZE; ++y ){
-                _view_cover[x][y] = TRANSPARENT_COLOR;
+                _view_cover[x][y] = backgroundColor;
             }
         }
 
@@ -112,6 +124,13 @@ public:
         while(it_view != nullptr){
             it_view->_data->drawItem(_view_cover );
             it_view = it_view->_next;
+        }
+
+        //menu items
+        List<MenuItemBase>::elem* it_menu = _menuItems->_head;
+        while( it_menu != nullptr ){
+            it_menu->_data->drawItem(_view_cover);
+            it_menu = it_menu->_next;
         }
 
         //toplevelitems
@@ -173,31 +192,40 @@ public:
         return _magazine->_size;
     }
 
-    int processShot(){
+    int processHit(){
+        const Corners& crosshairCorners = _topLevelItem->getCorners();
         if( getCartridgeCount() > 0 ){
-            const Corners& crosshairCorners = _topLevelItem->getCorners();
             Point p;
             p.x = ((double)( crosshairCorners.rLow.x - crosshairCorners.lUp.x ) / 2 ) + _mapCorners->lUp.x + crosshairCorners.lUp.x;
             p.y = ((double)( crosshairCorners.rLow.y - crosshairCorners.lUp.y ) / 2 ) + _mapCorners->lUp.y + crosshairCorners.lUp.y;
 
+
             if(_singleItem != nullptr ){
                 if( _singleItem->gotHit(p)){
-                    delete _singleItem;
-                    _singleItem = nullptr;
-                    return 1;
+                    return _singleItem->getTypeId();
                 }
             }
 
-            List<MapItemBase>::elem* it = _itemList->_head;
-            while( it != nullptr ){
-                if( it->_data->gotHit(p) ){
-                    _itemList->remove(it->_data);
-                    // return points
-                    return 1;
+            List<MapItemBase>::elem* itMapItem = _itemList->_head;
+            while( itMapItem != nullptr ){
+                if( itMapItem->_data->gotHit(p) ){
+                    return itMapItem->_data->getTypeId();
                 }
-                it = it->_next;
+                itMapItem = itMapItem->_next;
             }
         }
+        Point p;
+        p.x = crosshairCorners.lUp.x + 8;
+        p.y = crosshairCorners.lUp.y + 8;
+
+        List<MenuItemBase>::elem* itMenuItem = _menuItems->_head;
+        while(itMenuItem != nullptr){
+            if( itMenuItem->_data->gotHit(p) ){
+                return itMenuItem->_data->getTypeId();
+            }
+            itMenuItem = itMenuItem->_next;
+        }
+
         return 0;
     }
 
@@ -205,6 +233,66 @@ public:
         _mapCorners = &corn;
     }
 
+
+    void clearItems(){
+        if(_singleItem != nullptr){
+            delete _singleItem;
+            _singleItem = nullptr;
+        }
+
+        for( size_t i = _magazine->_size; i > 0 ; --i ){
+            _magazine->remove(_magazine->_tail->_data);
+        }
+
+        for( size_t i = _itemList->_size; i > 0 ; --i ){
+            _itemList->remove(_itemList->_tail->_data);
+        }
+
+        for( size_t i = _menuItems->_size; i > 0 ; --i ){
+            _menuItems->remove(_menuItems->_tail->_data);
+        }
+
+    }
+
+    void buildStartScreen(bool includeHighscore){
+        clearItems();
+        _menuItems->push_back(new GrouseStart);
+        _menuItems->push_back(new MenuEntry(TypeIdMenuEntryStart));
+        _menuItems->push_back(new MenuEntry(TypeIdMenuEntrySettings));
+        if( includeHighscore ){
+            _menuItems->push_back(new MenuEntry(TypeIdMenuEntryHighscore));
+        }
+    }
+
+    void buildGameScreen(){
+        clearItems();
+        _itemList->push_back(new GrouseFishing);
+        _itemList->push_back(new GrouseFly);
+        _itemList->push_back(new GrouseRun);
+    }
+
+    void updateStartScreen(){
+
+    }
+
+    void buildSettingsScreen(){
+        clearItems();
+        _menuItems->push_back(new MenuEntry(TypeIdMenuEntryAutoreload));
+        _menuItems->push_back(new MenuEntry(TypeIdMenuEntryOk));
+        _menuItems->push_back(new CheckBox);
+        _menuItems->push_back(new MenuEntry(TypeIdMenuEntryNavigation));
+        _menuItems->push_back(new MenuEntry(TypeIdMenuEntryCrosshair));
+    }
+
+    void toggleAllCheckboxes(){
+        List<MenuItemBase>::elem* it = _menuItems->_head;
+        while( it != nullptr ){
+            if( it->_data->getTypeId() == TypeIdMenuEntryCheckbox ){
+                (static_cast<CheckBox*>(it->_data))->toggle();
+            }
+            it = it->_next;
+        }
+    }
 
 private:
 
