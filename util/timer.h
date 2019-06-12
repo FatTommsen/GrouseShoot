@@ -14,8 +14,17 @@ class Timer{
 
 private:
     bool _param;
+    timer_msp432* timer;
 
 public:
+
+    Timer(){
+        timer = new timer_msp432(TIMER32_2);
+    }
+
+    ~Timer(){
+        delete timer;
+    }
 
     static void setTrue( void * arg ){
         bool* b = (static_cast<bool *>(arg));
@@ -30,21 +39,19 @@ public:
 
     void delay( unsigned int us ){
         _param = false;
-        timer_msp432 timer2(TIMER32_2);
-        timer2.setPeriod(us, TIMER::ONE_SHOT);
-        timer2.setCallback( Timer::setTrue, &_param);
-        timer2.start();
+        timer->setPeriod(us, TIMER::ONE_SHOT);
+        timer->setCallback( Timer::setTrue, &_param);
+        timer->start();
 
         while(!_param) ;
     }
 
     void startGame( unsigned int s, bool* param ){
-        *param = false;
-        timer_msp432 timer2(TIMER32_2);
+        *param = true;
         uint32_t period = 1000000 * s;
-        timer2.setPeriod(period, TIMER::ONE_SHOT);
-        timer2.setCallback( Timer::setTrue, param );
-        timer2.start();
+        timer->setPeriod(period, TIMER::ONE_SHOT);
+        timer->setCallback( Timer::setFalse, param );
+        timer->start();
     }
 
 

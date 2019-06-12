@@ -19,7 +19,8 @@ extern const uint16_t image_grouserun_2[644];
 extern const uint16_t image_grouserun_3[644];
 extern const uint16_t image_grouserun_4[644];
 extern const uint16_t image_grouserun_5[644];
-extern const uint16_t image_grouserun_points[644];
+extern const uint8_t image_symbols_flag_5;
+
 
 class GrouseRun : public MapItemBase{
 
@@ -36,7 +37,7 @@ private:
 public:
 
     GrouseRun()
-    : MapItemBase(grouserun_x, grouserun_y, image_grouserun_1, TypeIdGrouseRun, image_grouserun_points), _actImg(0), _imgCounter(0), _moveCounter(0)
+    : MapItemBase(grouserun_x, grouserun_y, image_grouserun_1, TypeIdGrouseRun, image_symbols_flag_5), _actImg(0), _imgCounter(0), _moveCounter(0)
     {
         _imgOrder[0] = &image_grouserun_1[0];
         _imgOrder[1] = &image_grouserun_2[0];

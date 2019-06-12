@@ -46,6 +46,19 @@ struct Corners{
     }
 };
 
+struct Statistic{
+    uint8_t flyCount;
+    uint8_t runCount;
+    uint8_t fishCount;
+    uint8_t shotCount;
+
+    Statistic()
+    : flyCount(0), runCount(0), fishCount(0), shotCount(0)
+    {
+
+    }
+};
+
 struct pixel{
     uint16_t* map;
     uint16_t* item;

@@ -12,7 +12,7 @@
 #include "graphicmanager.h"
 #include "periphery/edumkbuttons.h"
 #include "util/timer.h"
-#include "util/uartlogger.h"
+#include "util/random.h"
 
 class Game{
 
@@ -68,21 +68,63 @@ public:
     void runGame(){
         bool inGame = true;
         EdumkIIButtons buttons;
-        //Timer timer;
-        //timer.startGame(2, &inGame );
+        Random& rand = Random::getInstance();
+        Statistic stat;
+        Timer timer;
+        timer.startGame(GAME_DURATION_S, &inGame );
 
         while(inGame){
+            //spawning
+            if( rand.next() * 100 < SPAWN_PERCENTAGE){
+                double d = rand.next();
+                if( d * 100 < 45 ){
+                    _itemManager->spawnGrouseFly();
+                }
+                else if( d * 100 < 90 ){
+                    _itemManager->spawnGrouseRun();
+                }
+                else if( !_itemManager->hasActiveGrouseFishing() ){
+                    _itemManager->spawnGrouseFishing();
+                }
+            }
+
             _gManager->updateScreen();
             if( buttons.topButtonPushed() ){
                 _itemManager->deleteOneCartridge();
+                stat.shotCount += 1;
                 if(_itemManager->getCartridgeCount() > 0){
-                    _itemManager->processHit();
+                    int type = _itemManager->processHit();
+                    if( type == TypeIdGrouseFly ){
+                        stat.flyCount += 1;
+                    }
+                    else if( type == TypeIdGrouseRun ){
+                        stat.runCount += 1;
+                    }
+                    else if( type == TypeIdGrouseFishing ){
+                        stat.fishCount += 1;
+                    }
+                }
+            }
+
+            if( _settings->reload ){
+                if( _itemManager->getCartridgeCount() == 0 ){
+                    _itemManager->reloadMagazine();
                 }
             }
             else if( buttons.lowButtonPushed() ){
                 _itemManager->reloadMagazine();
             }
         }
+
+        _gManager->printStatistic(stat);
+
+        timer.delay(30000);
+        while(true){
+            if(buttons.topButtonPushed()){
+                return;
+            }
+        }
+
     }
 
     void loadSettings(){
@@ -111,8 +153,6 @@ public:
             }
         }
     }
-
-
 
 
 };

@@ -102,7 +102,7 @@ public:
 
     }
 
-    void updateViewCover( uint16_t backgroundColor ){
+    void updateViewCover( uint16_t backgroundColor, bool showTopLevelItem = true ){
         for(size_t x = 0; x < DISPLAY_SIZE; ++x ){
             for(size_t y = 0; y < DISPLAY_SIZE; ++y ){
                 _view_cover[x][y] = backgroundColor;
@@ -135,7 +135,9 @@ public:
         }
 
         //toplevelitems
-        _topLevelItem->drawItem(_view_cover);
+        if( showTopLevelItem ){
+            _topLevelItem->drawItem(_view_cover);
+        }
     }
 
     void deleteItemsOutOfMap(){
@@ -165,6 +167,10 @@ public:
         while( _magazine->_size < MAGAZINE_SIZE ){
             _magazine->push_back(new Cartridge(_magazine->_size));
         }
+    }
+
+    void spawnGrouseRun(){
+        _itemList->push_back(new GrouseRun);
     }
 
     void spawnGrouseFly(){

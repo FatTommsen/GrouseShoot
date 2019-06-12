@@ -15,14 +15,18 @@
 extern const size_t map_size_x;
 extern const size_t map_size_y;
 
+extern const uint8_t image_symbols_x;
+extern const uint8_t image_symbols_y;
+extern const uint8_t image_symbols[572];
+
 class MapItemBase : public ItemBase{
 
 public:
 
     virtual bool outOfMap() = 0;
 
-    MapItemBase( const uint16_t image_x, const uint16_t image_y, const uint16_t* image, const uint16_t type_id, const uint16_t* points )
-    : ItemBase( image_x, image_y, image, type_id ), _img_reverse(false), _alive(true), _pointCounter(0), _imagePoints(points), _outOfMap(false)
+    MapItemBase( const uint16_t image_x, const uint16_t image_y, const uint16_t* image, const uint16_t type_id, uint8_t image_flag )
+    : ItemBase( image_x, image_y, image, type_id ), _img_reverse(false), _alive(true), _pointCounter(0), _outOfMap(false), _image_flag(image_flag)
     {
 
     }
@@ -34,8 +38,9 @@ protected:
     bool _img_reverse;
     bool _alive;
     uint8_t _pointCounter;
-    const uint16_t* _imagePoints;
     bool _outOfMap;
+    uint8_t _image_flag;
+
 
     Point getRandomBorderPoint(){
         Point p;
@@ -138,11 +143,18 @@ public:
                 for(size_t x_abs = max( map_corn.lUp.x ,_corn->lUp.x); x_abs < min( map_corn.rLow.x, _corn->rLow.x); ++ x_abs ){
                     y_img = y_abs - _corn->lUp.y;
                     x_img = x_abs - _corn->lUp.x;
-                    if( _img_reverse ){
-                        x_img = _image_x -1 - x_img;
+                    if(_alive){
+                        if( _img_reverse ){
+                            x_img = _image_x -1 - x_img;
+                        }
+                        if(_image[ y_img * _image_x + x_img] != TRANSPARENT_COLOR){
+                            view_cover[y_abs - map_corn.lUp.y][x_abs - map_corn.lUp.x] = _image[ y_img * _image_x + x_img];
+                        }
                     }
-                    if(_image[ y_img * _image_x + x_img] != TRANSPARENT_COLOR){
-                        view_cover[y_abs - map_corn.lUp.y][x_abs - map_corn.lUp.x] = _image[ y_img * _image_x + x_img];
+                    else{
+                        if( image_symbols[y_img * _image_x + x_img] & _image_flag ){
+                            view_cover[y_abs - map_corn.lUp.y][x_abs - map_corn.lUp.x] = FONT_COLOR_POINTS;
+                        }
                     }
                 }
             }
@@ -152,9 +164,16 @@ public:
 public:
 
     bool gotHit( const Point& p ){
+        if(!_alive){
+            return false;
+        }
         if( _corn->lUp.x <= p.x && _corn->rLow.x >= p.x && _corn->lUp.y <= p.y && _corn->rLow.y >= p.y ){
             _alive = false;
-            _image = _imagePoints;
+            //_image = _imagePoints;
+            _corn->rLow.x = _corn->lUp.x + image_symbols_x;
+            _corn->rLow.y = _corn->lUp.y + image_symbols_y;
+            _image_x = image_symbols_x;
+            _image_y = image_symbols_y;
             return true;
         }
         return false;

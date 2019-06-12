@@ -12,6 +12,8 @@
 #include "spi_msp432.h"
 #include "st7735s_drv.h"
 #include "../custom_yahal/uGUI_2layer.h"
+#include "font_10x16.h"
+#include "font_6x8.h"
 
 class Display {
 
@@ -68,6 +70,39 @@ public:
         _bmp_map->background = view;
         _gui->DrawBMP_2layer(0, 0, _bmp_map);
     }
+
+    void write(uint16_t x, uint16_t y, const char* msg){
+        _gui->PutString(x, y, msg, false);
+    }
+
+    void initStatScreen(){
+        _gui->FillScreen(MENU_BACKGROUND_COLOR);
+        _gui->FontSelect(&FONT_6X8);
+        _gui->FontSetHSpace(0);
+        _gui->FontSetVSpace(0);
+        _gui->SetForecolor(MENU_FONT_UNMARKED);
+        _gui->SetBackcolor(MENU_BACKGROUND_COLOR);
+        _gui->DrawLine( 7, 28, 71, 28, MENU_FONT_UNMARKED);
+        _gui->DrawLine(57, 82, 121, 82, MENU_FONT_UNMARKED);
+    }
+
+    void writeHeadline(uint16_t x, uint16_t y, const char* msg){
+        _gui->FontSelect(&FONT_10X16);
+        write( x, y, msg);
+        _gui->FontSelect(&FONT_6X8);
+    }
+
+    void putChar(uint16_t x, uint16_t y, char c){
+        _gui->PutChar(c, x, y, MENU_FONT_UNMARKED, 0, false);
+    }
+
+    void putScoreChar( uint16_t x, uint16_t y, char c ){
+        _gui->FontSelect(&FONT_10X16);
+        _gui->PutChar(c, x, y, MENU_FONT_UNMARKED, 0, false);
+        _gui->FontSelect(&FONT_6X8);
+    }
+
+
 
 };
 

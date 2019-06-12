@@ -17,8 +17,7 @@ extern uint16_t grouse_fly_y;
 extern uint16_t image_grouse_fly_up[240];
 extern uint16_t image_grouse_fly_mid[240];
 extern uint16_t image_grouse_fly_low[240];
-extern uint16_t image_grouse_fly_points[240];
-
+extern const uint8_t image_symbols_flag_10;
 
 class GrouseFly : public MapItemBase{
 
@@ -32,7 +31,7 @@ private:
 public:
 
     GrouseFly()
-    : MapItemBase(grouse_fly_x, grouse_fly_y, image_grouse_fly_up, TypeIdGrouseFly, image_grouse_fly_points), _actImg(0), _imgCounter(0)
+    : MapItemBase(grouse_fly_x, grouse_fly_y, image_grouse_fly_up, TypeIdGrouseFly, image_symbols_flag_10), _actImg(0), _imgCounter(0)
     {
         _imgOrder[0] = &image_grouse_fly_up[0];
         _imgOrder[1] = &image_grouse_fly_mid[0];

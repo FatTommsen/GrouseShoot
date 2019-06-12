@@ -42,8 +42,8 @@ class ItemBase{
 protected:
 
     Corners* _corn;
-    const uint16_t _image_x;
-    const uint16_t _image_y;
+    uint16_t _image_x;
+    uint16_t _image_y;
     const uint16_t* _image;
     const uint16_t _type_id;
 
