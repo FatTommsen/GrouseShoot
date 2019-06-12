@@ -19,16 +19,19 @@ class Game{
 private:
     GraphicManager* _gManager;
     MapItemManager* _itemManager;
+    Settings* _settings;
 public:
 
     Game(){
         _itemManager = new MapItemManager;
         _gManager = new GraphicManager( *_itemManager );
+        _settings = new Settings;
     }
 
     ~Game(){
         delete _gManager;
         delete _itemManager;
+        delete _settings;
     }
 
     void loadMenu(){
@@ -83,7 +86,7 @@ public:
     }
 
     void loadSettings(){
-        _itemManager->buildSettingsScreen();
+        _itemManager->buildSettingsScreen( *_settings );
     }
 
     void runSettings(){
@@ -97,6 +100,11 @@ public:
                 }
                 else if( i == TypeIdMenuEntryCheckbox ){
                     _itemManager->toggleAllCheckboxes();
+                    _settings->reload = !_settings->reload;
+                }
+                else if( i == TypeIdSymbolSwitch ){
+                    _itemManager->toggleSettingSymbols();
+                    _settings->mapViaGSensor = !_settings->mapViaGSensor;
                 }
             }
         }

@@ -28,6 +28,9 @@
 #define TypeIdMenuEntryCheckbox     12
 #define TypeIdMenuEntryNavigation   13
 #define TypeIdMenuEntryCrosshair    14
+#define TypeIdSymbolCrosshair       15
+#define TypeIdSymbolNavigation      16
+#define TypeIdSymbolSwitch          17
 
 #ifndef GRAPHIC_INTERFACEMAPITEM_H_
 #define GRAPHIC_INTERFACEMAPITEM_H_

@@ -10,12 +10,12 @@
 #include <cstdint>
 
 extern const uint8_t image_symbols_x = 22;
-extern const uint8_t image_Symbols_y = 26;
+extern const uint8_t image_symbols_y = 26;
 extern const uint8_t image_symbols_flag_box = 1;
 extern const uint8_t image_symbols_flag_haken = 2;
-extern const uint8_t image_symbols_flag_gsensor = 2;
-extern const uint8_t image_symbols_flag_jostick = 2;
-extern const uint8_t image_symbols_flag_change = 2;
+extern const uint8_t image_symbols_flag_gsensor = 4;
+extern const uint8_t image_symbols_flag_joystick = 8;
+extern const uint8_t image_symbols_flag_change = 16;
 
 extern const uint8_t image_symbols[572] = {
 0, 0, 0, 0, 0, 0, 0, 0,

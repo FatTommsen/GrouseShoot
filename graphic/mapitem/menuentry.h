@@ -28,10 +28,11 @@ class MenuEntry : public MenuItemBase{
 
 private:
     bool _marked;
+    bool _markable;
 
 public:
     MenuEntry(uint8_t type_id)
-    : MenuItemBase( image_menu_combi_x, image_menu_combi_y, nullptr, type_id), _marked(false)
+    : MenuItemBase( image_menu_combi_x, image_menu_combi_y, nullptr, type_id), _marked(false), _markable(true)
     {
         _corn->lUp.x = MENU_ENTRY_X;
         if( type_id == TypeIdMenuEntryStart ){
@@ -46,6 +47,7 @@ public:
         else if( type_id == TypeIdMenuEntryAutoreload ){
             _corn->lUp.x = MENU_ENTRY_X_AUTO;
             _corn->lUp.y = MENU_ENTRY_Y_AUTO;
+            _markable = false;
         }
         else if( type_id == TypeIdMenuEntryOk ){
             _corn->lUp.x = MENU_ENTRY_X_OK;
@@ -54,10 +56,12 @@ public:
         else if( type_id == TypeIdMenuEntryNavigation ){
             _corn->lUp.x = MENU_ENTRY_X_AUTO;
             _corn->lUp.y = MENU_ENTRY_Y_NAVIGATION;
+            _markable = false;
         }
         else if( type_id == TypeIdMenuEntryCrosshair ){
             _corn->lUp.x = MENU_ENTRY_X_AUTO;
             _corn->lUp.y = MENU_ENTRY_Y_CROSSHAIR;
+            _markable = false;
         }
 
         _corn->rLow.x = _corn->lUp.x + image_menu_combi_x;
@@ -65,11 +69,13 @@ public:
     }
 
     virtual void update_position( const Point& p ){
-        if(gotHit(p)){
-            _marked = true;
-        }
-        else{
-            _marked = false;
+        if(_markable){
+            if(gotHit(p)){
+                _marked = true;
+            }
+            else{
+                _marked = false;
+            }
         }
     }
 

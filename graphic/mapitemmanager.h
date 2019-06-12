@@ -18,6 +18,7 @@
 #include "mapitem/grousestart.h"
 #include "mapitem/menuentry.h"
 #include "mapitem/checkbox.h"
+#include "mapitem/symbol.h"
 
 #include "mapitem/mapitembase.h"
 #include "mapitem/viewitembase.h"
@@ -275,13 +276,16 @@ public:
 
     }
 
-    void buildSettingsScreen(){
+    void buildSettingsScreen(const Settings& settings){
         clearItems();
         _menuItems->push_back(new MenuEntry(TypeIdMenuEntryAutoreload));
         _menuItems->push_back(new MenuEntry(TypeIdMenuEntryOk));
-        _menuItems->push_back(new CheckBox);
+        _menuItems->push_back(new CheckBox (settings.reload));
         _menuItems->push_back(new MenuEntry(TypeIdMenuEntryNavigation));
         _menuItems->push_back(new MenuEntry(TypeIdMenuEntryCrosshair));
+        _menuItems->push_back(new Symbol(TypeIdSymbolNavigation, settings.mapViaGSensor));
+        _menuItems->push_back(new Symbol(TypeIdSymbolCrosshair, settings.mapViaGSensor));
+        _menuItems->push_back(new Symbol(TypeIdSymbolSwitch, false));
     }
 
     void toggleAllCheckboxes(){
@@ -289,6 +293,16 @@ public:
         while( it != nullptr ){
             if( it->_data->getTypeId() == TypeIdMenuEntryCheckbox ){
                 (static_cast<CheckBox*>(it->_data))->toggle();
+            }
+            it = it->_next;
+        }
+    }
+
+    void toggleSettingSymbols(){
+        List<MenuItemBase>::elem* it = _menuItems->_head;
+        while( it != nullptr ){
+            if( it->_data->getTypeId() == TypeIdSymbolCrosshair || it->_data->getTypeId() == TypeIdSymbolNavigation ){
+                (static_cast<Symbol*>(it->_data))->toggle();
             }
             it = it->_next;
         }

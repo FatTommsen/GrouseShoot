@@ -53,6 +53,13 @@ struct pixel{
     pixel():map(nullptr), item(nullptr){};
 };
 
+struct Settings{
+    bool reload;
+    bool mapViaGSensor;
+
+    Settings(): reload(false), mapViaGSensor(true){};
+};
+
 inline size_t min( size_t x1, size_t x2 ){
     return x1 <= x2 ? x1 : x2;
 }

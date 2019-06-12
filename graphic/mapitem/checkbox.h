@@ -11,7 +11,7 @@
 #include "menuitembase.h"
 
 extern const uint8_t image_symbols_x;
-extern const uint8_t image_Symbols_y;
+extern const uint8_t image_symbols_y;
 extern const uint8_t image_symbols_flag_box;
 extern const uint8_t image_symbols_flag_haken;
 
@@ -26,14 +26,14 @@ private:
 
 public:
 
-    CheckBox()
-    : MenuItemBase( image_symbols_x, image_Symbols_y, nullptr, TypeIdMenuEntryCheckbox), _set(true), _marked(false)
+    CheckBox( bool checked )
+    : MenuItemBase( image_symbols_x, image_symbols_y, nullptr, TypeIdMenuEntryCheckbox), _set(checked), _marked(false)
     {
         _corn->lUp.x = MENU_ENTRY_CHECKBOX_X;
         _corn->lUp.y = MENU_ENTRY_CHECKBOX_Y;
 
         _corn->rLow.x = _corn->lUp.x + image_symbols_x;
-        _corn->rLow.y = _corn->lUp.y + image_Symbols_y;
+        _corn->rLow.y = _corn->lUp.y + image_symbols_y;
     }
 
     virtual ~CheckBox(){
