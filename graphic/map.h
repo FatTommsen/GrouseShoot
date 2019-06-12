@@ -10,6 +10,7 @@
 
 #include "util/util.h"
 #include "../periphery/gsensor.h"
+#include "../periphery/joystick.h"
 
 extern const size_t map_size_x;
 extern const size_t map_size_y;
@@ -21,25 +22,26 @@ private:
 
     Corners* _corn;
     uint16_t **_view;
-    GSensor* _gSen;
+    GSensor& _gSen;
+    Joystick& _joy;
+    bool _useGSensor;
 
 public:
 
-    Map(){
+    Map()
+    : _gSen( GSensor::getInstance() ), _joy(Joystick::getInstance()), _useGSensor(true)
+    {
 
         _view = new uint16_t*[DISPLAY_SIZE];
         _corn = new Corners;
 
         reset();
 
-        _gSen = new GSensor();
-
     }
 
     ~Map(){
         delete _corn;
         delete _view;
-        delete _gSen;
     }
 
     uint16_t** getCurrentView(){
@@ -57,10 +59,19 @@ public:
     }
 
     void update() {
-        _gSen->measure();
 
-        int x = _gSen->getAndResetX();
-        int y = _gSen->getAndResetY();
+        int x = 0;
+        int y = 0;
+        if(_useGSensor){
+            _gSen.measure();
+            x = _gSen.getAndResetX();
+            y = _gSen.getAndResetY();
+        }
+        else{
+            _joy.measure();
+            x = _joy.getAndResetX();
+            y = _joy.getAndResetY();
+        }
 
         if( x != 0 || y != 0){
             moveViewH( y * MAP_SCROLL_SPEED );
@@ -71,6 +82,10 @@ public:
 
     const Corners& getCorners(){
         return *_corn;
+    }
+
+    void toggleNavigation(){
+        _useGSensor = !_useGSensor;
     }
 
 private:

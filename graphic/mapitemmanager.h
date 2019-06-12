@@ -308,6 +308,10 @@ public:
         }
     }
 
+    void toggleTopLevelNavigation(){
+        (static_cast<Crosshair*>(_topLevelItem))->toggleNavigation();
+    }
+
 private:
 
     int getTypeCount( int typeId ){

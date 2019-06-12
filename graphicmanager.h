@@ -62,6 +62,10 @@ public:
         _map->reset();
     }
 
+    void toggleMapNavigation(){
+        _map->toggleNavigation();
+    }
+
 };
 
 

@@ -9,10 +9,14 @@
 #define PERIPHERY_JOYSTICK_H_
 
 #include "adc14_msp432.h"
+#include "../settings.h"
 
 class Joystick{
 
 private:
+
+    static Joystick* instance;
+
     adc14_msp432_channel* _joyX;
     adc14_msp432_channel* _joyY;
 
@@ -20,7 +24,6 @@ private:
     int _moveY;
 
     uint16_t _offset;
-public:
 
     Joystick()
     : _moveX(0), _moveY(0)
@@ -32,6 +35,15 @@ public:
         _joyY->adcMode(ADC::ADC_10_BIT);
 
         _offset = _joyX->adcReadRaw();
+    }
+
+public:
+
+    static Joystick& getInstance(){
+        if( Joystick::instance == nullptr ){
+            Joystick::instance = new Joystick;
+        }
+        return *instance;
     }
 
     ~Joystick(){

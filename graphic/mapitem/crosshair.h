@@ -9,6 +9,7 @@
 #define GRAPHIC_CROSSHAIR_H_
 
 #include "../../periphery/joystick.h"
+#include "../../periphery/gsensor.h"
 #include "../../util/util.h"
 #include "viewitembase.h"
 
@@ -20,12 +21,14 @@ extern const uint16_t image_crosshair[256];
 class Crosshair : public ViewItemBase{
 
 private:
-    Joystick* _joy;
+    Joystick& _joy;
+    GSensor& _gSen;
+    bool _useGSensor;
 
 public:
 
     Crosshair( )
-    : ViewItemBase( crosshair_x, crosshair_y, image_crosshair, TypeIdCrosshair )
+    : ViewItemBase( crosshair_x, crosshair_y, image_crosshair, TypeIdCrosshair ), _joy(Joystick::getInstance()), _gSen(GSensor::getInstance()), _useGSensor(false)
     {
         _corn->lUp.x = CROSSHAIR_START_X;
         _corn->lUp.y = CROSSHAIR_START_Y;
@@ -33,22 +36,33 @@ public:
         _corn->rLow.x = _corn->lUp.x + crosshair_x;
         _corn->rLow.y = _corn->lUp.y + crosshair_y;
 
-        _joy = new Joystick();
-
     }
 
     virtual ~Crosshair(){
-        delete _joy;
     }
 
     void update_position() override{
-        _joy->measure();
-        int x = _joy->getAndResetX();
-        int y = _joy->getAndResetY();
+        int x = 0;
+        int y = 0;
+        if(_useGSensor){
+            _gSen.measure();
+            x = _gSen.getAndResetX();
+            y = _gSen.getAndResetY();
+        }
+        else{
+            _joy.measure();
+            x = _joy.getAndResetX();
+            y = _joy.getAndResetY();
+        }
+
 
         moveCrosshairH( y * CROSSHAIR_SCROLL_SPEED);
         moveCrosshairV( x * CROSSHAIR_SCROLL_SPEED);
 
+    }
+
+    void toggleNavigation(){
+        _useGSensor = !_useGSensor;
     }
 
 private:

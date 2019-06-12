@@ -103,8 +103,10 @@ public:
                     _settings->reload = !_settings->reload;
                 }
                 else if( i == TypeIdSymbolSwitch ){
-                    _itemManager->toggleSettingSymbols();
                     _settings->mapViaGSensor = !_settings->mapViaGSensor;
+                    _itemManager->toggleSettingSymbols();
+                    _gManager->toggleMapNavigation();
+                    _itemManager->toggleTopLevelNavigation();
                 }
             }
         }

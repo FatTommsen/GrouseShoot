@@ -10,10 +10,13 @@
 
 #include "adc14_msp432.h"
 #include "gpio_msp432.h"
+#include "../settings.h"
 
 class GSensor {
 
 private:
+
+    static GSensor* instance;
 
     adc14_msp432_channel* _sensorX;
     adc14_msp432_channel* _sensorY;
@@ -23,8 +26,6 @@ private:
 
     int _moveX;
     int _moveY;
-
-public:
 
     GSensor()
     : _offset(8192), _moveX(0), _moveY(0) {
@@ -36,6 +37,16 @@ public:
         _sensorY->adcMode(ADC::ADC_14_BIT);
         _sensorZ->adcMode(ADC::ADC_14_BIT);
     }
+
+public:
+
+    static GSensor& getInstance(){
+        if( GSensor::instance == nullptr ){
+            GSensor::instance = new GSensor;
+        }
+        return *instance;
+    }
+
 
     ~GSensor(){
         delete _sensorX;
