@@ -19,6 +19,7 @@
 #include "mapitem/menuentry.h"
 #include "mapitem/checkbox.h"
 #include "mapitem/symbol.h"
+#include "mapitem/itemhitbox.h"
 
 #include "mapitem/mapitembase.h"
 #include "mapitem/viewitembase.h"
@@ -102,11 +103,18 @@ public:
 
     }
 
-    void updateViewCover( uint16_t backgroundColor, bool showTopLevelItem = true ){
+    void fillViewWithColor( uint16_t color ){
         for(size_t x = 0; x < DISPLAY_SIZE; ++x ){
             for(size_t y = 0; y < DISPLAY_SIZE; ++y ){
-                _view_cover[x][y] = backgroundColor;
+                _view_cover[x][y] = color;
             }
+        }
+    }
+
+    //void updateViewCover( uint16_t backgroundColor, bool showTopLevelItem = true ){
+    void updateViewCover( uint16_t backgroundColor, bool fillViewFirst = true ){
+        if( fillViewFirst ){
+            fillViewWithColor( backgroundColor );
         }
 
         //dynamic items
@@ -135,9 +143,7 @@ public:
         }
 
         //toplevelitems
-        if( showTopLevelItem ){
-            _topLevelItem->drawItem(_view_cover);
-        }
+        _topLevelItem->drawItem(_view_cover);
     }
 
     void deleteItemsOutOfMap(){
@@ -292,6 +298,23 @@ public:
         _menuItems->push_back(new Symbol(TypeIdSymbolNavigation, settings.mapViaGSensor));
         _menuItems->push_back(new Symbol(TypeIdSymbolCrosshair, settings.mapViaGSensor));
         _menuItems->push_back(new Symbol(TypeIdSymbolSwitch, false));
+    }
+
+    void buildStatHighScreen(){
+        clearItems();
+        _menuItems->push_back(new MenuEntry(TypeIdMenuEntryOk));
+    }
+
+    void buildHighscoreHitboxes( uint8_t amount ){
+        if(amount >= 1 ){
+            _menuItems->push_back( new ItemHitBox(TypeIdHitboxOne));
+        }
+        if(amount >= 2 ){
+            _menuItems->push_back( new ItemHitBox(TypeIdHitboxTwo));
+        }
+        if(amount >= 3 ){
+            _menuItems->push_back( new ItemHitBox(TypeIdHitboxThree));
+        }
     }
 
     void toggleAllCheckboxes(){

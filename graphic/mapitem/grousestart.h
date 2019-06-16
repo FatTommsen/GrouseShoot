@@ -14,7 +14,7 @@ extern const uint16_t image_grouse_start_x;
 extern const uint16_t image_grouse_start_y;
 
 extern const uint16_t image_grouse_start_1[1650];
-extern const uint16_t image_grouse_start_2[1650];
+//extern const uint16_t image_grouse_start_2[1650];
 extern const uint16_t image_grouse_start_3[1650];
 
 class GrouseStart : public MenuItemBase{
@@ -35,8 +35,8 @@ public:
         _corn->rLow.y = _corn->lUp.y + image_grouse_start_y;
 
         _imgOrder[0] = &image_grouse_start_1[0];
-        _imgOrder[1] = &image_grouse_start_2[0];
-        _imgOrder[2] = &image_grouse_start_3[0];
+        _imgOrder[1] = &image_grouse_start_3[0];
+       // _imgOrder[2] = &image_grouse_start_3[0];
     }
 
     ~GrouseStart(){
@@ -55,7 +55,7 @@ public:
             }
         }
 
-        _image = _imgOrder[_imageCounter / 2];
+        _image = _imgOrder[_imageCounter / 3];
     }
 };
 

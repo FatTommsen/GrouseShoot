@@ -20,22 +20,26 @@ private:
     GraphicManager* _gManager;
     MapItemManager* _itemManager;
     Settings* _settings;
+    Highscore* _high;
 public:
 
     Game(){
         _itemManager = new MapItemManager;
         _gManager = new GraphicManager( *_itemManager );
         _settings = new Settings;
+        _high = new Highscore;
     }
 
     ~Game(){
         delete _gManager;
         delete _itemManager;
         delete _settings;
+        delete _high;
     }
 
     void loadMenu(){
-        _itemManager->buildStartScreen(true);
+        _itemManager->buildStartScreen(_high->hasStatistic());
+        //_itemManager->buildStartScreen(false);
     }
 
     void runMenu(){
@@ -52,6 +56,11 @@ public:
                 else if( i == TypeIdMenuEntrySettings ){
                     loadSettings();
                     runSettings();
+                    loadMenu();
+                }
+                else if( i == TypeIdMenuEntryHighscore ){
+                    loadHighscore();
+                    runHighscore();
                     loadMenu();
                 }
             }
@@ -116,15 +125,25 @@ public:
             }
         }
 
-        _gManager->printStatistic(stat);
+        loadStatistic();
+        runStatatistic(stat);
+    }
 
-        timer.delay(30000);
+    void loadStatistic(){
+        _itemManager->buildStatHighScreen();
+    }
+
+    void runStatatistic( Statistic& stat, bool add = true){
+        EdumkIIButtons buttons;
         while(true){
-            if(buttons.topButtonPushed()){
+            _gManager->printStatistic(stat);
+            if(buttons.topButtonPushed() && _itemManager->processHit() == TypeIdMenuEntryOk){
+                if(add){
+                    _high->add(stat);
+                }
                 return;
             }
         }
-
     }
 
     void loadSettings(){
@@ -149,6 +168,49 @@ public:
                     _itemManager->toggleSettingSymbols();
                     _gManager->toggleMapNavigation();
                     _itemManager->toggleTopLevelNavigation();
+                }
+            }
+        }
+    }
+
+    void loadHighscore(){
+        _itemManager->buildStatHighScreen();
+        uint8_t highAmount = 0;
+        if( _high->stat_third != nullptr ){
+            highAmount = 3;
+        }
+        else if( _high->stat_second != nullptr ){
+            highAmount = 2;
+        }
+        else if( _high->stat_first != nullptr ){
+            highAmount = 1;
+        }
+        _itemManager->buildHighscoreHitboxes(highAmount);
+    }
+
+    void runHighscore(){
+        EdumkIIButtons buttons;
+        while(true){
+            _gManager->printHighscore(*_high);
+            if(buttons.topButtonPushed() ){
+                uint8_t type = _itemManager->processHit();
+                if( type == TypeIdHitboxOne ){
+                    loadStatistic();
+                    runStatatistic(*(_high->stat_first), false);
+                    loadHighscore();
+                }
+                if( type == TypeIdHitboxTwo ){
+                    loadStatistic();
+                    runStatatistic(*(_high->stat_second), false);
+                    loadHighscore();
+                }
+                if( type == TypeIdHitboxThree ){
+                    loadStatistic();
+                    runStatatistic(*(_high->stat_third), false);
+                    loadHighscore();
+                }
+                if( type == TypeIdMenuEntryOk ){
+                    return;
                 }
             }
         }

@@ -16,7 +16,7 @@ extern const uint16_t grouserun_y;
 
 extern const uint16_t image_grouserun_1[644];
 extern const uint16_t image_grouserun_2[644];
-extern const uint16_t image_grouserun_3[644];
+//extern const uint16_t image_grouserun_3[644];
 extern const uint16_t image_grouserun_4[644];
 extern const uint16_t image_grouserun_5[644];
 extern const uint8_t image_symbols_flag_5;
@@ -28,7 +28,7 @@ private:
 
     size_t _actImg;
     int _imgCounter;
-    const uint16_t* _imgOrder[5];
+    const uint16_t* _imgOrder[4];
     Point * _path;
     size_t _moveCounter;
     bool _leftTop;
@@ -41,9 +41,9 @@ public:
     {
         _imgOrder[0] = &image_grouserun_1[0];
         _imgOrder[1] = &image_grouserun_2[0];
-        _imgOrder[2] = &image_grouserun_3[0];
-        _imgOrder[3] = &image_grouserun_4[0];
-        _imgOrder[4] = &image_grouserun_5[0];
+        //_imgOrder[2] = &image_grouserun_3[0];
+        _imgOrder[2] = &image_grouserun_4[0];
+        _imgOrder[3] = &image_grouserun_5[0];
 
         _path = new Point;
         Random rand = Random::getInstance();
@@ -108,7 +108,7 @@ public:
             else{
                 _imgCounter = 0;
                 ++_actImg;
-                if( _actImg > 4 ){
+                if( _actImg > 3 ){
                     _actImg = 0;
                 }
                 _image = _imgOrder[_actImg];

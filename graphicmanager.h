@@ -69,35 +69,39 @@ public:
     }
 
     void printStatistic( const Statistic& stat ){
+        _itemManager.fillViewWithColor( MENU_BACKGROUND_COLOR);
+        uint16_t** view = _itemManager.getCoverLayer();
         _display->initStatScreen();
-        _display->writeHeadline(10, 10, "Score:");
-        _display->write(15, 37, "Fly     (10):" );
-        _display->write(15, 47, "Run     ( 5):" );
-        _display->write(15, 57, "Fishing ( 2):" );
-        _display->write(15, 67, "Shots   (-1):" );
+        drawHLineToView(28, 7, 71, MENU_FONT_UNMARKED, view);
+        drawHLineToView(82, 57, 121, MENU_FONT_UNMARKED, view);
+        _display->writeHeadlineToView(10, 10, view, "Score:");
+        _display->writeToView(15, 37, "Fly     (10):", view );
+        _display->writeToView(15, 47, "Run     ( 5):", view );
+        _display->writeToView(15, 57, "Fishing ( 2):", view );
+        _display->writeToView(15, 67, "Shots   (-1):", view );
 
 
-        _display->putChar( 98, 37, getChar((stat.flyCount/100)%100, true) );
-        _display->putChar(104, 37, getChar((stat.flyCount/10)%10, true) );
-        _display->putChar(110, 37, getChar(stat.flyCount) );
-        _display->putChar(117, 37, 'x' );
+        _display->putCharToView( 98, 37, view, getChar((stat.flyCount/100)%100, true) );
+        _display->putCharToView(104, 37, view, getChar((stat.flyCount/10)%10, true) );
+        _display->putCharToView(110, 37, view, getChar(stat.flyCount) );
+        _display->putCharToView(117, 37, view, 'x' );
 
-        _display->putChar( 98, 47, getChar((stat.flyCount/100)%100, true) );
-        _display->putChar(104, 47, getChar((stat.runCount/10)%10, true) );
-        _display->putChar(110, 47, getChar(stat.runCount) );
-        _display->putChar(117, 47, 'x' );
+        _display->putCharToView( 98, 47, view, getChar((stat.flyCount/100)%100, true) );
+        _display->putCharToView(104, 47, view, getChar((stat.runCount/10)%10, true) );
+        _display->putCharToView(110, 47, view, getChar(stat.runCount) );
+        _display->putCharToView(117, 47, view, 'x' );
 
-        _display->putChar( 98, 57, getChar((stat.flyCount/100)%100, true) );
-        _display->putChar(104, 57, getChar((stat.fishCount/10)%10, true) );
-        _display->putChar(110, 57, getChar(stat.fishCount) );
-        _display->putChar(117, 57, 'x' );
+        _display->putCharToView( 98, 57, view, getChar((stat.flyCount/100)%100, true) );
+        _display->putCharToView(104, 57, view, getChar((stat.fishCount/10)%10, true) );
+        _display->putCharToView(110, 57, view, getChar(stat.fishCount) );
+        _display->putCharToView(117, 57, view, 'x' );
 
-        _display->putChar( 98, 67, getChar((stat.flyCount/100)%100, true) );
-        _display->putChar(104, 67, getChar((stat.shotCount/10)%10, true) );
-        _display->putChar(110, 67, getChar(stat.shotCount) );
-        _display->putChar(117, 67, 'x' );
+        _display->putCharToView( 98, 67, view, getChar((stat.flyCount/100)%100, true) );
+        _display->putCharToView(104, 67, view, getChar((stat.shotCount/10)%10, true) );
+        _display->putCharToView(110, 67, view, getChar(stat.shotCount) );
+        _display->putCharToView(117, 67, view, 'x' );
 
-        int points = (10*stat.flyCount + 5*stat.runCount + 2*stat.fishCount - stat.shotCount);
+        int points = stat.getPoints();
 
         char vz = ' ';
 
@@ -110,10 +114,13 @@ public:
         char ten = getChar((points%100)/10, (hun == 32) );
         char one = getChar((points%10));
 
-        _display->putScoreChar(63, 87, vz);
-        _display->putScoreChar(75, 87, hun);
-        _display->putScoreChar(87, 87, ten);
-        _display->putScoreChar(99, 87, one);
+        _display->putScoreCharToView(63, 87, view, vz);
+        _display->putScoreCharToView(75, 87, view, hun);
+        _display->putScoreCharToView(87, 87, view, ten);
+        _display->putScoreCharToView(99, 87, view, one);
+        _itemManager.updateItemPositions();
+        _itemManager.updateViewCover(MENU_BACKGROUND_COLOR, false);
+        _display->drawOneLayer( (const void**)view);
     }
 
     char getChar( uint8_t num, bool first = false ){
@@ -124,7 +131,93 @@ public:
         return (char)(num + 48);
     }
 
+    void drawHLineToView( uint8_t y, uint8_t xStart, uint8_t xEnd, uint16_t color, uint16_t** view ){
+        for( size_t x = xStart; x <= xEnd; ++x ){
+            view[y][x] = color;
+        }
+    }
 
+    void printHighscore( const Highscore& high){
+        _itemManager.fillViewWithColor( MENU_BACKGROUND_COLOR);
+        uint16_t** view = _itemManager.getCoverLayer();
+        _display->initStatScreen();
+        _display->writeHeadlineToView(10, 10, view, "Highscore:");
+        drawHLineToView(28, 7, 103, MENU_FONT_UNMARKED, view);
+
+        if( high.stat_first ){
+            bool marked = _itemManager.processHit() == TypeIdHitboxOne;
+            _display->writeToView(25, 45, "1.", view, marked );
+            int points = high.stat_first->getPoints();
+            char vz = ' ';
+            if(points < 0 ){
+                points *= (-1);
+                vz = '-';
+            }
+            char hun = getChar((points%1000)/1000, true);
+            char ten = getChar((points%100)/10, (hun == 32) );
+            char one = getChar((points%10));
+            if( hun != 32 ){
+                _display->putCharToView(40, 45, view, vz, marked);
+                _display->putCharToView(48, 45, view, hun, marked);
+            }
+            else{
+                _display->putCharToView(48, 45, view, vz, marked);
+            }
+            _display->putCharToView(56, 45, view, ten, marked);
+            _display->putCharToView(64, 45, view, one, marked);
+        }
+        if( high.stat_second ){
+            bool marked = _itemManager.processHit() == TypeIdHitboxTwo;
+            _display->writeToView(25, 60, "2.", view, marked );
+            int points = high.stat_second->getPoints();
+            char vz = ' ';
+            if(points < 0 ){
+                points *= (-1);
+                vz = '-';
+            }
+            char hun = getChar((points%1000)/1000, true);
+            char ten = getChar((points%100)/10, (hun == 32) );
+            char one = getChar((points%10));
+
+            if( hun != 32 ){
+                _display->putCharToView(40, 60, view, vz, marked);
+                _display->putCharToView(48, 60, view, hun, marked);
+            }
+            else{
+                _display->putCharToView(48, 60, view, vz, marked);
+            }
+
+            _display->putCharToView(56, 60, view, ten, marked);
+            _display->putCharToView(64, 60, view, one, marked);
+        }
+        if( high.stat_third ){
+            bool marked = _itemManager.processHit() == TypeIdHitboxThree;
+            _display->writeToView(25, 75, "3.", view, marked );
+            int points = high.stat_third->getPoints();
+            char vz = ' ';
+            if(points < 0 ){
+                points *= (-1);
+                vz = '-';
+            }
+            char hun = getChar((points%1000)/1000, true);
+            char ten = getChar((points%100)/10, (hun == 32) );
+            char one = getChar((points%10));
+
+            if( hun != 32 ){
+                _display->putCharToView(40, 75, view, vz, marked);
+                _display->putCharToView(48, 75, view, hun, marked);
+            }
+            else{
+                _display->putCharToView(48, 75, view, vz, marked);
+            }
+            _display->putCharToView(56, 75, view, ten, marked);
+            _display->putCharToView(64, 75, view, one, marked);
+        }
+
+        _itemManager.updateItemPositions();
+        _itemManager.updateViewCover(MENU_BACKGROUND_COLOR, false);
+        _display->drawOneLayer( (const void**)view);
+    }
 };
 
 

@@ -57,6 +57,88 @@ struct Statistic{
     {
 
     }
+
+    int getPoints() const{
+        return flyCount * 10 + runCount * 5 + fishCount * 2 - shotCount;
+    }
+};
+
+struct Highscore{
+    Statistic* stat_first;
+    Statistic* stat_second;
+    Statistic* stat_third;
+
+    Highscore() : stat_first(nullptr), stat_second(nullptr), stat_third(nullptr){};
+
+    ~Highscore(){
+        if( stat_first ){
+            delete stat_first;
+        }
+        if( stat_second ){
+            delete stat_second;
+        }
+        if( stat_third ){
+            delete stat_third;
+        }
+    }
+
+    bool hasStatistic(){
+        if( stat_first != nullptr ){
+            return true;
+        }
+        return false;
+    }
+
+    void add( Statistic stat ){
+        if( !stat_first ){
+            stat_first = new Statistic;
+            stat_first->shotCount = 255;
+        }
+        else if( !stat_second ){
+            stat_second = new Statistic;
+            stat_second->shotCount = 255;
+        }
+        else if( !stat_third ){
+            stat_third = new Statistic;
+            stat_third->shotCount = 255;
+        }
+
+        if( stat_first && stat.getPoints() > stat_first->getPoints() ){
+            change( stat, *stat_first );
+        }
+
+        if( stat_second && stat.getPoints() > stat_second->getPoints() ){
+            change( stat, *stat_second );
+        }
+
+        if( stat_third && stat.getPoints() > stat_third->getPoints() ){
+            change(stat, *stat_third);
+        }
+
+    }
+
+    void change( Statistic& stat1, Statistic& stat2 ){
+        int tmp = 0;
+        tmp = stat1.flyCount;
+        stat1.flyCount = stat2.flyCount;
+        stat2.flyCount = tmp;
+
+        tmp = stat1.runCount;
+        stat1.runCount = stat2.runCount;
+        stat2.runCount = tmp;
+
+
+        tmp = stat1.fishCount;
+        stat1.fishCount = stat2.fishCount;
+        stat2.fishCount = tmp;
+
+
+        tmp = stat1.shotCount;
+        stat1.shotCount = stat2.shotCount;
+        stat2.shotCount = tmp;
+    }
+
+
 };
 
 struct pixel{

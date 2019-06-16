@@ -31,6 +31,9 @@
 #define TypeIdSymbolCrosshair       15
 #define TypeIdSymbolNavigation      16
 #define TypeIdSymbolSwitch          17
+#define TypeIdHitboxOne             18
+#define TypeIdHitboxTwo             19
+#define TypeIdHitboxThree           20
 
 #ifndef GRAPHIC_INTERFACEMAPITEM_H_
 #define GRAPHIC_INTERFACEMAPITEM_H_
