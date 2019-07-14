@@ -13,6 +13,7 @@
 
 #include "periphery/display.h"
 #include "util/timer.h"
+#include "String.h"
 
 
 class GraphicManager{
@@ -76,59 +77,21 @@ public:
         drawHLineToView(82, 57, 121, MENU_FONT_UNMARKED, view);
         _display->writeHeadlineToView(10, 10, view, "Score:");
         _display->writeToView(15, 37, "Fly     (10):", view );
+        _display->writeToView(98, 37, to_String(stat.flyCount).fill_left(3) + "x", view);
         _display->writeToView(15, 47, "Run     ( 5):", view );
+        _display->writeToView(98, 47, to_String(stat.runCount).fill_left(3) + "x", view);
         _display->writeToView(15, 57, "Fishing ( 2):", view );
+        _display->writeToView(98, 57, to_String(stat.fishCount).fill_left(3) + "x", view);
         _display->writeToView(15, 67, "Shots   (-1):", view );
-
-
-        _display->putCharToView( 98, 37, view, getChar((stat.flyCount/100)%100, true) );
-        _display->putCharToView(104, 37, view, getChar((stat.flyCount/10)%10, true) );
-        _display->putCharToView(110, 37, view, getChar(stat.flyCount) );
-        _display->putCharToView(117, 37, view, 'x' );
-
-        _display->putCharToView( 98, 47, view, getChar((stat.flyCount/100)%100, true) );
-        _display->putCharToView(104, 47, view, getChar((stat.runCount/10)%10, true) );
-        _display->putCharToView(110, 47, view, getChar(stat.runCount) );
-        _display->putCharToView(117, 47, view, 'x' );
-
-        _display->putCharToView( 98, 57, view, getChar((stat.flyCount/100)%100, true) );
-        _display->putCharToView(104, 57, view, getChar((stat.fishCount/10)%10, true) );
-        _display->putCharToView(110, 57, view, getChar(stat.fishCount) );
-        _display->putCharToView(117, 57, view, 'x' );
-
-        _display->putCharToView( 98, 67, view, getChar((stat.flyCount/100)%100, true) );
-        _display->putCharToView(104, 67, view, getChar((stat.shotCount/10)%10, true) );
-        _display->putCharToView(110, 67, view, getChar(stat.shotCount) );
-        _display->putCharToView(117, 67, view, 'x' );
+        _display->writeToView(98, 67, to_String(stat.shotCount).fill_left(3) + "x", view);
 
         int points = stat.getPoints();
 
-        char vz = ' ';
+        _display->putScoreStringToView(80, 87, view, to_String(points).fill_left(4));
 
-        if(points < 0 ){
-            points *= (-1);
-            vz = '-';
-        }
-
-        char hun = getChar((points%1000)/1000, true);
-        char ten = getChar((points%100)/10, (hun == 32) );
-        char one = getChar((points%10));
-
-        _display->putScoreCharToView(63, 87, view, vz);
-        _display->putScoreCharToView(75, 87, view, hun);
-        _display->putScoreCharToView(87, 87, view, ten);
-        _display->putScoreCharToView(99, 87, view, one);
         _itemManager.updateItemPositions();
         _itemManager.updateViewCover(MENU_BACKGROUND_COLOR, false);
         _display->drawOneLayer( (const void**)view);
-    }
-
-    char getChar( uint8_t num, bool first = false ){
-        num = num % 10;
-        if( num == 0 && first ){
-            return (char)32;
-        }
-        return (char)(num + 48);
     }
 
     void drawHLineToView( uint8_t y, uint8_t xStart, uint8_t xEnd, uint16_t color, uint16_t** view ){
@@ -146,72 +109,19 @@ public:
 
         if( high.stat_first ){
             bool marked = _itemManager.processHit() == TypeIdHitboxOne;
-            _display->writeToView(25, 45, "1.", view, marked );
             int points = high.stat_first->getPoints();
-            char vz = ' ';
-            if(points < 0 ){
-                points *= (-1);
-                vz = '-';
-            }
-            char hun = getChar((points%1000)/1000, true);
-            char ten = getChar((points%100)/10, (hun == 32) );
-            char one = getChar((points%10));
-            if( hun != 32 ){
-                _display->putCharToView(40, 45, view, vz, marked);
-                _display->putCharToView(48, 45, view, hun, marked);
-            }
-            else{
-                _display->putCharToView(48, 45, view, vz, marked);
-            }
-            _display->putCharToView(56, 45, view, ten, marked);
-            _display->putCharToView(64, 45, view, one, marked);
+            _display->writeToView(25, 45, "1.  " + to_String(points).fill_left(4), view, marked );
+
         }
         if( high.stat_second ){
             bool marked = _itemManager.processHit() == TypeIdHitboxTwo;
-            _display->writeToView(25, 60, "2.", view, marked );
             int points = high.stat_second->getPoints();
-            char vz = ' ';
-            if(points < 0 ){
-                points *= (-1);
-                vz = '-';
-            }
-            char hun = getChar((points%1000)/1000, true);
-            char ten = getChar((points%100)/10, (hun == 32) );
-            char one = getChar((points%10));
-
-            if( hun != 32 ){
-                _display->putCharToView(40, 60, view, vz, marked);
-                _display->putCharToView(48, 60, view, hun, marked);
-            }
-            else{
-                _display->putCharToView(48, 60, view, vz, marked);
-            }
-
-            _display->putCharToView(56, 60, view, ten, marked);
-            _display->putCharToView(64, 60, view, one, marked);
+            _display->writeToView(25, 60, "2.  " + to_String(points).fill_left(4), view, marked );
         }
         if( high.stat_third ){
             bool marked = _itemManager.processHit() == TypeIdHitboxThree;
-            _display->writeToView(25, 75, "3.", view, marked );
             int points = high.stat_third->getPoints();
-            char vz = ' ';
-            if(points < 0 ){
-                points *= (-1);
-                vz = '-';
-            }
-            char hun = getChar((points%1000)/1000, true);
-            char ten = getChar((points%100)/10, (hun == 32) );
-            char one = getChar((points%10));
-
-            if( hun != 32 ){
-                _display->putCharToView(40, 75, view, vz, marked);
-                _display->putCharToView(48, 75, view, hun, marked);
-            }
-            else{
-                _display->putCharToView(48, 75, view, vz, marked);
-            }
-            _display->putCharToView(56, 75, view, ten, marked);
-            _display->putCharToView(64, 75, view, one, marked);
+            _display->writeToView(25, 75, "3.  " + to_String(points).fill_left(4), view, marked );
         }
 
         _itemManager.updateItemPositions();

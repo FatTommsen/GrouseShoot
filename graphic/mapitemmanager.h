@@ -96,11 +96,6 @@ public:
             itMenuItem = itMenuItem->_next;
         }
 
-//        while( _itemList->_size < 4  ){
-//            _itemList->push_back(new GrouseFly);
-//            _itemList->push_back(new GrouseRun);
-//        }
-
     }
 
     void fillViewWithColor( uint16_t color ){

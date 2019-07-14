@@ -105,9 +105,10 @@ public:
         }
     }
 
-    void putScoreCharToView( uint16_t x, uint16_t y, uint16_t** view, char c ){
+    void putScoreStringToView( uint16_t x, uint16_t y, uint16_t** view, const char* s ){
         _gui->FontSelect(&FONT_10X16);
-        _gui->PutCharToView(c, x, y, MENU_FONT_UNMARKED, 0, view, false);
+        _gui->PutStringToView(x, y, s, view);
+        //_gui->(c, x, y, MENU_FONT_UNMARKED, 0, view, false);
         _gui->FontSelect(&FONT_6X8);
     }
 

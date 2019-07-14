@@ -7,34 +7,27 @@
 
 #include <cstdio>
 
-// start positioin config
-
-#define MAP_START_X 128
-#define MAP_START_Y 44
-
-#define CROSSHAIR_START_X 56
-#define CROSSHAIR_START_Y 56
-
 // gameplay
+
+#define GAME_DURATION_S 30
+#define MAGAZINE_SIZE 6
+#define SPAWN_PERCENTAGE 20
 
 #define MAP_SCROLL_SPEED 10
 #define CROSSHAIR_SCROLL_SPEED 5
+
 #define GROUSE_FLY_SPEED 2
+#define GROUSEFLY_ANIMATION_SPEED 2
+#define GROUSERUN_ANIMATION_SPEED 1
 
 #define SENSOR_TRIGGER_G 400
 #define SENSOR_TRIGGER_JOY 200
 
-#define GROUSEFLY_ANIMATION_SPEED 2
-#define GROUSERUN_ANIMATION_SPEED 1
-
-#define GAME_DURATION_S 3
-#define SPAWN_PERCENTAGE 20
-
-//game config
-#define MAGAZINE_SIZE 6
 
 
-//fix config
+/*
+ * Fix config! Do not change these configuration.
+ */
 
 #define DISPLAY_SIZE 128
 #define TRANSPARENT_COLOR 0x2589 //green
@@ -44,9 +37,12 @@
 #define MENU_CHECKBOX_CHECK 0xC000
 #define FONT_COLOR_POINTS 0x0000
 
+#define MAP_START_X 128
+#define MAP_START_Y 44
 
+#define CROSSHAIR_START_X 56
+#define CROSSHAIR_START_Y 56
 
-// item positioning
 #define GROUSE_FISHING_START_X 130
 #define GROUSE_FISHING_START_Y 120
 
